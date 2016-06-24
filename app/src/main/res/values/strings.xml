@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MoodLink</string>
     <string name="welcome">Welcome back User !</string>
+    <string name="legend">You did well today !</string>
 </resources>
