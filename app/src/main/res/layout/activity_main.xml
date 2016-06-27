@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.tim.moodlink.MainActivity">
+    android:layout_height="match_parent" >
+
     <RelativeLayout
+        android:id="@+id/drawer_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <View android:id="@+id/rectangle_title"
@@ -135,39 +137,56 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:gravity="center"
-            android:textSize="30dp"
+            android:textSize="30sp"
             android:layout_marginTop="10dp" />
 
         <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:id="@+id/sad_icon"
         android:src="@mipmap/sad_face"
         android:layout_below="@+id/Circle"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="48dp"
-            android:layout_marginLeft="15dp" />
+            android:layout_marginLeft="15dp"
+            android:scaleType="fitXY" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:id="@+id/smile_icon"
             android:src="@mipmap/smile_face"
             android:layout_alignTop="@+id/sad_icon"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="15dp" />
+            android:layout_marginRight="15dp"
+            android:scaleType="fitXY" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/imageButtonDrawer"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:scaleType="fitXY"
+            android:src="@mipmap/menu_icon"
+            android:adjustViewBounds="true"
+            android:background="#1fb6ff"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="15dp" />
+
     </RelativeLayout>
 
     <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="COUCOU"/>
-
-    </ListView>
+        android:id="@+id/my_drawer"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#ecf7fc"
+        android:choiceMode="singleChoice"
+        android:divider="#AAA"
+        android:dividerHeight="0dp" />
 
 </android.support.v4.widget.DrawerLayout>
