@@ -7,6 +7,8 @@
     <string name="menu2">Mood Changes Graph </string>
     <string name="menu3">Settings</string>
 
+    <string name="emerg_title">Emergency Contacts</string>
+
     <string-array name="items">
         <item>MoodLink</item>
     </string-array>
