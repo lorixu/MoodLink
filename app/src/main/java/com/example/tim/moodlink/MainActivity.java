@@ -16,7 +16,8 @@ public class MainActivity extends Activity {
     private DrawerLayout myDrawer;
     private String[] drawerItemsList;
     private ListView myDrawerList;
-    private ImageButton drawerButton;
+    private ImageButton drawerOpenButton;
+    private ImageButton drawerCloseButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,20 +30,36 @@ public class MainActivity extends Activity {
         drawerItemsList = getResources().getStringArray(R.array.items);
         myDrawerList = (ListView) findViewById(R.id.my_drawer);
         myDrawerList.setAdapter(new ArrayAdapter<String>(this,
-               R.layout.drawer_item, drawerItemsList));
+               R.layout.drawer_item,R.id.text1, drawerItemsList));
 
-        // Drawer Button
+        // Drawer Buttons
 
-        drawerButton = (ImageButton) findViewById(R.id.imageButtonDrawer);
-        drawerButton.setOnClickListener(new View.OnClickListener() {
+        drawerOpenButton = (ImageButton) findViewById(R.id.imageButton_DrawerClosed);
+        drawerCloseButton = (ImageButton) myDrawerList.findViewById(R.id.imageButton_DrawerOpened);
+
+        drawerOpenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openSideDrawer();
             }
         });
+
+
+        /*drawerCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeSideDrawer();
+            }
+        });*/
+
+
     }
 
     private void openSideDrawer(){
         myDrawer.openDrawer(Gravity.LEFT);
+    }
+
+    private void closeSideDrawer(){
+        myDrawer.closeDrawer(Gravity.LEFT);
     }
 }

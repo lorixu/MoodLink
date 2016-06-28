@@ -3,12 +3,11 @@
     <string name="welcome">Welcome back User !</string>
     <string name="legend">You did well today !</string>
 
+    <string name="menu1">Emergency Contacts</string>
+    <string name="menu2">Mood Changes Graph </string>
+    <string name="menu3">Settings</string>
+
     <string-array name="items">
-        <item>Item 1</item>
-        <item>Item 2</item>
-        <item>Item 3</item>
-        <item>Item 4</item>
-        <item>Item 5</item>
-        <item>Item 6</item>
+        <item>MoodLink</item>
     </string-array>
 </resources>
