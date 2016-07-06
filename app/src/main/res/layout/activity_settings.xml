@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_content"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    tools:context=".EmergencyContactsActivity">
+    tools:context=".SettingsActivity">
+
     <View android:id="@+id/rectangle_title"
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -25,17 +26,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/emerg_title"
+        android:text="@string/settings_title"
         android:id="@+id/welcome_textView"
         android:gravity="center"
         android:textStyle="bold"
         android:textColor="#47525e"
-        android:layout_marginTop="48dp"
-        android:layout_below="@+id/rectangle_title"
         android:layout_alignLeft="@+id/Circle"
         android:layout_alignStart="@+id/Circle"
         android:layout_alignRight="@+id/Circle"
-        android:layout_alignEnd="@+id/Circle" />
+        android:layout_alignEnd="@+id/Circle"
+        android:layout_below="@+id/rectangle_title"
+        android:layout_alignBottom="@+id/Circle" />
 
     <ImageButton
         android:layout_width="50dp"
@@ -49,18 +50,5 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:scaleType="fitXY" />
-
-    <ImageButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/imageButton2"
-        android:src="@mipmap/plus"
-        android:background="#1fb6ff"
-        android:scaleType="fitXY"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp" />
 
 </RelativeLayout>

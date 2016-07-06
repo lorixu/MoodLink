@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">MoodLink</string>
-    <string name="welcome">Welcome back User !</string>
+    <string name="welcome">Welcome back %1$s !</string>
     <string name="legend">You did well today !</string>
 
     <string name="menu1">Emergency Contacts</string>
@@ -8,8 +8,61 @@
     <string name="menu3">Settings</string>
 
     <string name="emerg_title">Emergency Contacts</string>
+    <string name="settings_title">Settings</string>
+    <string name="graph_title">Mood\nChanges</string>
 
-    <string-array name="items">
+    <!--First Launch Layout-->
+
+    <string name="first_launch_title">Welcome in\nMoodlink</string>
+    <string name="first_setup_info">Please fill up those few information for us to know you better.</string>
+    <string name="username_text">Your Name</string>
+    <string name="username_hint">Please enter your name here ...</string>
+    <string name="first_contact_text">Please enter your practitioner\'s information.</string>
+    <string name="first_pract_name_hint">Please enter his/her name ...</string>
+    <string name="first_pract_phone_hint">Please enter his/her phone number ...</string>
+    <string name="first_pract_email_hint">Please enter his/her email address ...</string>
+    <string name="validate_button_text">Save</string>
+
+
+    <!--Emergency Contacts Layout-->
+
+    <string-array name="contacts_longclick_options">
+        <item>Modify</item>
+        <item>Delete</item>
+    </string-array>
+
+
+    <!--Modify contact Layout-->
+
+    <string name="modify_contact_title">Modify\nContact</string>
+
+    <!--New contact Layout-->
+    <string name="new_contact_title">New\nContact</string>
+
+    <string name="cat_text">Category</string>
+    <string name="cat_hint">Select one ...</string>
+
+    <string name="name_text">Name</string>
+    <string name="name_hint">Enter a name ...</string>
+
+    <string name="phone_text">Phone Number</string>
+    <string name="phone_hint">Enter a phone number ...</string>
+
+    <string name="email_text">Email Adress</string>
+    <string name="email_hint">Enter a email adress ...</string>
+
+    <!--Preferences-->
+
+    <string name="pref_previously_started">previously_started</string>
+
+    <string-array name="items_drawer">
         <item>MoodLink</item>
+    </string-array>
+
+    <string-array name="cat_items_new_contact">
+        <item>Practitioner</item>
+        <item>Family</item>
+        <item>Friend</item>
+        <item>Co-Worker</item>
     </string-array>
 </resources>
