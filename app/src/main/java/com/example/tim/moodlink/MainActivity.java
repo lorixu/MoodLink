@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
 
@@ -35,35 +36,24 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Permission for accessing the camera (and the external storage)
-
-        int[] permissionsCheck = new int[]{
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.CAMERA),
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)};
-
-        if (permissionsCheck[0] == PackageManager.PERMISSION_DENIED || permissionsCheck[1] == PackageManager.PERMISSION_DENIED) {
-            int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-        }
-
         // Checking if it's a first launch
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
+        boolean previouslyStarted = prefs.getBoolean(getString(R.string.PREF_PREVIOUSLY_STARTED), false);
         if (!previouslyStarted) {
             Intent intent = new Intent(MainActivity.this, FirstLaunchActivity.class);
             startActivity(intent);
             finish();
         }
 
+        //Permission for accessing the camera, the external storage ...
+
+        checkPermissions();
+
         // File's reading
         FileInputStream input;
 
         try {
-            input = openFileInput("USERNAME");
+            input = openFileInput(getString(R.string.username_file));
             int character;
             String fileContent = "";
             while ((character = input.read()) != -1) {
@@ -163,4 +153,32 @@ public class MainActivity extends Activity {
         graphButton = null;
         settingsButton = null;
     }
+
+    void checkPermissions() {
+
+
+        String[] permissionsArray = new String[]{Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.PROCESS_OUTGOING_CALLS};
+
+        ArrayList<String> permissionsToAsk = new ArrayList<>();
+
+        for (String permission : permissionsArray) {
+            if (ContextCompat.checkSelfPermission(this,
+                    permission) == PackageManager.PERMISSION_DENIED) {
+                permissionsToAsk.add(permission);
+            }
+        }
+
+        int MY_PERMISSIONS_REQUEST = 0;
+
+        if (! permissionsToAsk.isEmpty()) {
+            ActivityCompat.requestPermissions(this,
+                    permissionsToAsk.toArray(new String[0]),
+                    MY_PERMISSIONS_REQUEST);
+        }
+    }
 }
+

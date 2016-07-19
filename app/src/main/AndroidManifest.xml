@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
 
     <uses-feature android:name="android.hardware.camera2" />
     <uses-feature android:name="android.hardware.Sensor" />
@@ -34,11 +37,19 @@
         <service
             android:name=".LightService"
             android:exported="false" />
+        <service
+            android:name=".SetAlarmManagerService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".CameraService"
+            android:enabled="true"
+            android:exported="true" />
 
         <receiver
             android:name=".AlarmReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
         <receiver
             android:name=".BootCompleteReceiver"
             android:enabled="true"
@@ -47,13 +58,17 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".PhoneReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
 
         <service
-            android:name=".SetAlarmManagerService"
-            android:enabled="true"
-            android:exported="true"></service>
-        <service
-            android:name=".CameraService"
+            android:name=".LocationService"
             android:enabled="true"
             android:exported="true"></service>
     </application>

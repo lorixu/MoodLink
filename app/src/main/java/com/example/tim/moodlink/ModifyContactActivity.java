@@ -78,7 +78,7 @@ public class ModifyContactActivity extends AppCompatActivity {
                 FileOutputStream output = null;
 
                 try {
-                    output = openFileOutput("CONTACTS", MODE_APPEND);
+                    output = openFileOutput(getString(R.string.contacts_file), MODE_APPEND);
 
                     output.write(toWrite.getBytes());
                     if(output != null)
@@ -100,7 +100,7 @@ public class ModifyContactActivity extends AppCompatActivity {
 
 
         try {
-            input = openFileInput ("CONTACTS");
+            input = openFileInput (getString(R.string.contacts_file));
             int character;
             String info = "";
             HashMap<String, String> element = new HashMap<String, String>();;
@@ -143,7 +143,7 @@ public class ModifyContactActivity extends AppCompatActivity {
 
     private void deleteContact(int pos){
         try {
-            input = openFileInput ("CONTACTS");
+            input = openFileInput (getString(R.string.contacts_file));
             int character;
             String info = "";
             HashMap<String, String> element = new HashMap<String, String>();;
@@ -176,8 +176,8 @@ public class ModifyContactActivity extends AppCompatActivity {
                 input.close();
             }
 
-            deleteFile("CONTACTS");
-            OutputStream output = openFileOutput("CONTACTS",MODE_PRIVATE);
+            deleteFile(getString(R.string.contacts_file));
+            OutputStream output = openFileOutput(getString(R.string.contacts_file),MODE_PRIVATE);
 
             for (int i = 0; i < contactsList.size(); i ++){
                 if (i != pos) {

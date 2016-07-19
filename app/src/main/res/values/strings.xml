@@ -1,15 +1,21 @@
 <resources>
     <string name="app_name">MoodLink</string>
+    <string name="package_name">com.example.tim.moodlink</string>
+
+    <!--Main Screen Layout-->
+
     <string name="welcome">Welcome back %1$s !</string>
     <string name="legend">You did well today !</string>
+
+    <!--Drawer Menu Layout-->
+
+    <string-array name="items_drawer">
+        <item>MoodLink</item>
+    </string-array>
 
     <string name="menu1">Emergency Contacts</string>
     <string name="menu2">Mood Changes Graph </string>
     <string name="menu3">Settings</string>
-
-    <string name="emerg_title">Emergency Contacts</string>
-    <string name="settings_title">Settings</string>
-    <string name="graph_title">Mood\nChanges</string>
 
     <!--First Launch Layout-->
 
@@ -25,6 +31,8 @@
 
 
     <!--Emergency Contacts Layout-->
+
+    <string name="emerg_title">Emergency Contacts</string>
 
     <string-array name="contacts_longclick_options">
         <item>Modify</item>
@@ -49,20 +57,27 @@
     <string name="phone_hint">Enter a phone number ...</string>
 
     <string name="email_text">Email Adress</string>
+
     <string name="email_hint">Enter a email adress ...</string>
-
-    <!--Preferences-->
-
-    <string name="pref_previously_started">previously_started</string>
-
-    <string-array name="items_drawer">
-        <item>MoodLink</item>
-    </string-array>
-
     <string-array name="cat_items_new_contact">
         <item>Practitioner</item>
         <item>Family</item>
         <item>Friend</item>
         <item>Co-Worker</item>
     </string-array>
+
+    <!--Graph Layout-->
+
+    <string name="graph_title">Mood\nChanges</string>
+
+    <!--Setting Layout-->
+
+    <string name="settings_title">Settings</string>
+
+    <string-array name="value_items_settings">
+        <item>Luminosity</item>
+    </string-array>
+
 </resources>
+
+

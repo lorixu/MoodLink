@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     tools:context=".AddContactActivity">
+
     <View android:id="@+id/rectangle_title"
         android:layout_width="match_parent"
         android:layout_height="75dp"
@@ -53,7 +54,20 @@
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp" />
 
-    <LinearLayout
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/button_save"
+        android:background="#1fb6ff"
+        android:scaleType="fitXY"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:src="@mipmap/check" />
+
+    <RelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -64,74 +78,108 @@
         android:layout_marginTop="10dp"
         android:background="#d0bcf4"
         android:layout_marginRight="10dp"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
         android:layout_marginBottom="10dp">
 
-        <TextView
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/first_setup_info"
-            android:id="@+id/textView3"
-            android:gravity="center" />
+            android:layout_height="match_parent"
+            android:id="@+id/scrollView"
+            android:nestedScrollingEnabled="true">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:id="@+id/username_editText"
-            android:layout_marginBottom="10dp"
-            android:hint="@string/username_hint"
-            android:inputType="textPersonName"
-            android:digits="AZERTYUIOPQSGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn 0123456789éèàçù" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignLeft="@+id/rectangle_shadow"
+                android:layout_alignStart="@+id/rectangle_shadow"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:background="#d0bcf4"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/first_contact_text"
-            android:id="@+id/textView4"
-            android:gravity="center" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/first_setup_info"
+                    android:id="@+id/textView3"
+                    android:gravity="center"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:textSize="20dp" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:id="@+id/first_contact_name_editText"
-            android:layout_marginBottom="10dp"
-            android:hint="@string/first_pract_name_hint"
-            android:inputType="textPersonName"
-            android:digits="AZERTYUIOPQSGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn 0123456789éèàçù" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:id="@+id/username_editText"
+                    android:hint="@string/username_hint"
+                    android:inputType="textPersonName"
+                    android:digits="AZERTYUIOPQSGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn 0123456789éèàçù"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="phone"
-            android:ems="10"
-            android:id="@+id/first_contact_phone_editText"
-            android:layout_marginBottom="10dp"
-            android:hint="@string/first_pract_phone_hint"
-            android:phoneNumber="true"
-            android:digits="0123456789 +()-" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/first_contact_text"
+                    android:id="@+id/textView4"
+                    android:gravity="center"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:textSize="20dp" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:ems="10"
-            android:id="@+id/first_contact_email_editText"
-            android:hint="@string/first_pract_email_hint"
-            android:digits="AZERTYUIOPQSGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn0123456789.@-_" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:id="@+id/first_contact_name_editText"
+                    android:hint="@string/first_pract_name_hint"
+                    android:inputType="textPersonName"
+                    android:digits="AZERTYUIOPQSGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn 0123456789éèàçù"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/validate_button_text"
-            android:id="@+id/button_save"
-            android:layout_gravity="center_horizontal" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:ems="10"
+                    android:id="@+id/first_contact_phone_editText"
+                    android:hint="@string/first_pract_phone_hint"
+                    android:phoneNumber="true"
+                    android:digits="0123456789 +()-"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:ems="10"
+                    android:id="@+id/first_contact_email_editText"
+                    android:hint="@string/first_pract_email_hint"
+                    android:digits="AZERTYUIOPQSGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn0123456789.@-_"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp" />
+            </LinearLayout>
+        </ScrollView>
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

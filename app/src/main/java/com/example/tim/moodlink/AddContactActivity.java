@@ -70,7 +70,7 @@ public class AddContactActivity extends AppCompatActivity {
                     FileOutputStream output = null;
 
                     try {
-                        output = openFileOutput("CONTACTS", MODE_APPEND);
+                        output = openFileOutput(getString(R.string.contacts_file), MODE_APPEND);
 
                         output.write(toWrite.getBytes());
                         if (output != null)

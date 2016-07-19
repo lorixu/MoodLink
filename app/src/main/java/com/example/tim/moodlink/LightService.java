@@ -1,6 +1,7 @@
 package com.example.tim.moodlink;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,13 +15,12 @@ import android.widget.Toast;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-// TODO : Start that on the phone's boot
-    // TODO : Take Picture every hour
-    // TODO : record phone calls
-    // TODO : Check user movements through accelerometer & GPS position
+
+
 
 public class LightService extends Service {
 
+    public static String TAG = "LIGHT SERVICE";
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -33,14 +33,12 @@ public class LightService extends Service {
         LightSensor lSensor = new LightSensor();
         lSensor.getAverageLuminosity();
 
-        Log.d("SERVICE", "Service created");
-        Toast.makeText(this, "Service created!", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onCreate: Service created!");
     }
 
     @Override
     public void onDestroy() {
-        Log.d("SERVICE", "Service destroyed");
-        Toast.makeText(this, "Service stopped", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "onDestroy: Service stopped!");
     }
 
 
@@ -67,6 +65,7 @@ public class LightService extends Service {
                     mSensor.unregisterListener(LightSensor.this);
                     writeToFile();
                     Toast.makeText(LightService.this, "Average Luminosity : " + average(luxValues), Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "Avg luminosity = "+average(luxValues)+" lux");
                     LightService.this.stopSelf();
                 }
             };
@@ -91,7 +90,7 @@ public class LightService extends Service {
             FileOutputStream output;
 
             try {
-                output = openFileOutput("LIGHT_VALUES", MODE_APPEND);
+                output = openFileOutput(getString(R.string.light_values_file), MODE_APPEND);
                 output.write((Float.toString(average(luxValues))+',').getBytes());
                 output.close();
 
@@ -102,7 +101,6 @@ public class LightService extends Service {
 
         @Override
         public void onSensorChanged(SensorEvent event) {
-            Log.d("LIGHT SENSOR", String.valueOf(event.values[0]));
             luxValues.add(event.values[0]);
         }
 
@@ -110,5 +108,11 @@ public class LightService extends Service {
         public void onAccuracyChanged(Sensor sensor, int i) {
 
         }
+    }
+
+
+    public static void launchLightService(Context context){
+        Intent luminosityServiceIntent = new Intent(context, LightService.class);
+        context.startService(luminosityServiceIntent);
     }
 }

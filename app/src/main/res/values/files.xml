@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="username_file">USERNAME</string>
+    <string name="contacts_file">CONTACTS</string>
+    <string name="light_values_file">LIGHT_VALUES</string>
+    <string name="camera_storage">/storage/emulated/0/Moodlink/Pictures</string>
+    <string name="phone_recorder_storage">/storage/emulated/0/Moodlink/Recorder</string>
+</resources>
