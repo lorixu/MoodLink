@@ -123,6 +123,31 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Location Service"
+                android:id="@+id/textView8"
+                android:gravity="center_vertical"
+                android:layout_weight="1" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/LocationServiceCheckBox"
+                android:checked="false"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical|right" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="30dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Phone Call Receiver"
                 android:id="@+id/textView7"
                 android:gravity="center_vertical"
@@ -132,7 +157,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/phoneCheckBox"
-                android:checked="true"
+                android:checked="false"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical|right" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="30dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="AccelerometerService"
+                android:id="@+id/textView9"
+                android:gravity="center_vertical"
+                android:layout_weight="1" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/AccelerometerServiceCheckBox"
+                android:checked="false"
                 android:layout_margin="10dp"
                 android:gravity="center_vertical|right" />
         </LinearLayout>

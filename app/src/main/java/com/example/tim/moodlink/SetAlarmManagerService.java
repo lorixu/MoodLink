@@ -40,13 +40,31 @@ public class SetAlarmManagerService extends Service {
 
             Intent broadcastLightIntent = new Intent(this, AlarmReceiver.class);
             broadcastLightIntent.putExtra(SERVICE_ID, AlarmReceiver.LIGHT_SERVICE);
-            PendingIntent alarmLightIntent;
-            alarmLightIntent = PendingIntent.getBroadcast(SetAlarmManagerService.this, AlarmReceiver.LIGHT_SERVICE, broadcastLightIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent alarmLightIntent = PendingIntent.getBroadcast(SetAlarmManagerService.this,
+                    AlarmReceiver.LIGHT_SERVICE,
+                    broadcastLightIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent broadcastCameraIntent = new Intent(this, AlarmReceiver.class);
             broadcastCameraIntent.putExtra(SERVICE_ID, AlarmReceiver.CAMERA_SERVICE);
-            PendingIntent alarmCameraIntent;
-            alarmCameraIntent = PendingIntent.getBroadcast(SetAlarmManagerService.this, AlarmReceiver.CAMERA_SERVICE, broadcastCameraIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent alarmCameraIntent = PendingIntent.getBroadcast(SetAlarmManagerService.this,
+                    AlarmReceiver.CAMERA_SERVICE,
+                    broadcastCameraIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            Intent broadcastLocationIntent = new Intent(this, AlarmReceiver.class);
+            broadcastLocationIntent.putExtra(SERVICE_ID, AlarmReceiver.LOCATION_SERVICE);
+            PendingIntent alarmLocationIntent = PendingIntent.getBroadcast(SetAlarmManagerService.this,
+                    AlarmReceiver.LOCATION_SERVICE,
+                    broadcastLocationIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            Intent broadcastAccelerometerIntent = new Intent(this, AlarmReceiver.class);
+            broadcastLocationIntent.putExtra(SERVICE_ID, AlarmReceiver.ACCELEROMETER_SERVICE);
+            PendingIntent alarmAccelerometerIntent = PendingIntent.getBroadcast(SetAlarmManagerService.this,
+                    AlarmReceiver.ACCELEROMETER_SERVICE,
+                    broadcastLocationIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SetAlarmManagerService.this);
             SharedPreferences.Editor edit = prefs.edit();
@@ -61,15 +79,21 @@ public class SetAlarmManagerService extends Service {
                             break;
 
                         case AlarmReceiver.ALL_SERVICES:
-                            Log.d(TAG, "onStartCommand: START All Services");
                             // Starting Light Service
                             setAlarmRepeating(alarmLightIntent);
+                            edit.putBoolean(getString(R.string.PREF_LIGHT_SERVICE_STARTED), Boolean.TRUE);
 
                             //Starting Camera Service
                             setAlarmRepeating(alarmCameraIntent);
-
-                            edit.putBoolean(getString(R.string.PREF_LIGHT_SERVICE_STARTED), Boolean.TRUE);
                             edit.putBoolean(getString(R.string.PREF_CAMERA_SERVICE_STARTED), Boolean.TRUE);
+
+                            //Starting Location Service
+                            setAlarmRepeating(alarmLocationIntent);
+                            edit.putBoolean(getString(R.string.PREF_LOCATION_SERVICE_ACTIVATED), Boolean.TRUE);
+
+                            //Starting Accelerometer Service
+                            setAlarmRepeating(alarmAccelerometerIntent);
+                            edit.putBoolean(getString(R.string.PREF_ACCELEROMETER_SERVICE_STARTED), Boolean.TRUE);
 
                             break;
 
@@ -83,6 +107,17 @@ public class SetAlarmManagerService extends Service {
                         case AlarmReceiver.CAMERA_SERVICE:
                             setAlarmRepeating(alarmCameraIntent);
                             edit.putBoolean(getString(R.string.PREF_CAMERA_SERVICE_STARTED), Boolean.TRUE);
+
+                            break;
+                        case AlarmReceiver.LOCATION_SERVICE:
+                            setAlarmRepeating(alarmLocationIntent);
+                            edit.putBoolean(getString(R.string.PREF_LOCATION_SERVICE_ACTIVATED), Boolean.TRUE);
+
+                            break;
+                        case AlarmReceiver.ACCELEROMETER_SERVICE:
+
+                            setAlarmRepeating(alarmAccelerometerIntent);
+                            edit.putBoolean(getString(R.string.PREF_ACCELEROMETER_SERVICE_STARTED), Boolean.TRUE);
 
                             break;
                     }
@@ -95,32 +130,43 @@ public class SetAlarmManagerService extends Service {
                             break;
 
                         case AlarmReceiver.ALL_SERVICES:
-                            Log.d(TAG, "onStartCommand: STOP All Services");
                             // Stopping Light Service
                             alarmMgr.cancel(alarmLightIntent);
+                            edit.putBoolean(getString(R.string.PREF_LIGHT_SERVICE_STARTED), Boolean.FALSE);
 
                             //Stopping Camera Service
                             alarmMgr.cancel(alarmCameraIntent);
-
-
-                            edit.putBoolean(getString(R.string.PREF_LIGHT_SERVICE_STARTED), Boolean.FALSE);
                             edit.putBoolean(getString(R.string.PREF_CAMERA_SERVICE_STARTED), Boolean.FALSE);
+
+                            //Stopping Camera Service
+                            alarmMgr.cancel(alarmLocationIntent);
+                            edit.putBoolean(getString(R.string.PREF_LOCATION_SERVICE_ACTIVATED), Boolean.FALSE);
+
+                            //Stopping Camera Service
+                            alarmMgr.cancel(alarmAccelerometerIntent);
+                            edit.putBoolean(getString(R.string.PREF_ACCELEROMETER_SERVICE_STARTED), Boolean.FALSE);
 
                             break;
 
                         case AlarmReceiver.LIGHT_SERVICE:
                             alarmMgr.cancel(alarmLightIntent);
-                            Log.d(TAG, "onStartCommand: STOP Light Service");
-
                             edit.putBoolean(getString(R.string.PREF_LIGHT_SERVICE_STARTED), Boolean.FALSE);
 
                             break;
 
                         case AlarmReceiver.CAMERA_SERVICE:
                             alarmMgr.cancel(alarmCameraIntent);
-                            Log.d(TAG, "onStartCommand: STOP Camera Service");
-
                             edit.putBoolean(getString(R.string.PREF_CAMERA_SERVICE_STARTED), Boolean.FALSE);
+
+                            break;
+                        case AlarmReceiver.LOCATION_SERVICE:
+                            alarmMgr.cancel(alarmLocationIntent);
+                            edit.putBoolean(getString(R.string.PREF_LOCATION_SERVICE_ACTIVATED), Boolean.FALSE);
+
+                            break;
+                        case AlarmReceiver.ACCELEROMETER_SERVICE:
+                            alarmMgr.cancel(alarmAccelerometerIntent);
+                            edit.putBoolean(getString(R.string.PREF_ACCELEROMETER_SERVICE_STARTED), Boolean.FALSE);
 
                             break;
                     }

@@ -2,15 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.tim.moodlink">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
 
     <uses-feature android:name="android.hardware.camera2" />
     <uses-feature android:name="android.hardware.Sensor" />
+    <uses-feature android:name="android.hardware.sensor.accelerometer" />
 
     <application
         android:allowBackup="true"
@@ -36,15 +41,24 @@
 
         <service
             android:name=".LightService"
+            android:enabled="true"
             android:exported="false" />
         <service
             android:name=".SetAlarmManagerService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
         <service
             android:name=".CameraService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
+        <service android:name=".AccelerometerService"
+            android:enabled="true"
+            android:exported="false"/>
+        <service
+            android:name=".LocationService"
+            android:enabled="true"
+            android:exported="false"/>
+
 
         <receiver
             android:name=".AlarmReceiver"
@@ -67,10 +81,6 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".LocationService"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>

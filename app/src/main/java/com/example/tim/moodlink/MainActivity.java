@@ -161,7 +161,9 @@ public class MainActivity extends Activity {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.PROCESS_OUTGOING_CALLS};
+                Manifest.permission.PROCESS_OUTGOING_CALLS,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION};
 
         ArrayList<String> permissionsToAsk = new ArrayList<>();
 
