@@ -48,9 +48,15 @@ public class CameraService extends Service {
     private Surface mDummySurface;
     private SurfaceTexture mDummyPreview;
 
+    private SQLLiteDBHelper db;
+
+
     public void onCreate() {
         SurfaceTexture mDummyPreview = new SurfaceTexture(1);
         mDummySurface = new Surface(mDummyPreview);
+
+        db = new SQLLiteDBHelper(getApplicationContext());
+
         Log.d(TAG, "onCreate: Service created!");
     }
 
@@ -119,10 +125,6 @@ public class CameraService extends Service {
         }
     }
 
-
-    /**
-     * Return the Camera Id which matches the field CAMERACHOICE.
-     */
     public String getCamera(CameraManager manager) {
         try {
             for (String cameraId : manager.getCameraIdList()) {
@@ -167,13 +169,10 @@ public class CameraService extends Service {
         imageReader.close();
         session.close();
         cameraDevice.close();
-
+        db.close();
         Log.d(TAG, "onDestroy: Service Stopped!");
     }
 
-    /**
-     * Process image data as desired.
-     */
     private void processImage(Image image) {
         int orientation = CameraService.this.getResources().getConfiguration().orientation;
 
@@ -199,6 +198,11 @@ public class CameraService extends Service {
 
             file = new File(getString(R.string.camera_storage), fileName + ".jpg");
 
+            CameraData cameraDataItem = new CameraData(
+                    getString(R.string.camera_storage)+"/"+fileName+".jpg",
+                    new TimeAndDay(Calendar.getInstance())
+            );
+            db.addCameraTuple(cameraDataItem);
 
             try {
 

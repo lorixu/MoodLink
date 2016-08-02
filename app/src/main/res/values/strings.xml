@@ -76,6 +76,10 @@
 
     <string-array name="value_items_settings">
         <item>Luminosity</item>
+        <item>Accelerometer</item>
+        <item>Location</item>
+        <item>Phone</item>
+        <item>Camera</item>
     </string-array>
 
 </resources>

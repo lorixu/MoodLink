@@ -3,23 +3,21 @@ package com.example.tim.moodlink;
 /**
  * Created by Tim on 22/07/2016.
  */
-public class LocationData {
+public class LocationData extends SensorData {
 
     private int id;
-    private TimeAndDay timeStamp;
     private double latitude;
     private double longitude;
 
 
-    public LocationData(TimeAndDay time, double latitude, double longitude){
-        this.timeStamp = time;
+    public LocationData(double latitude, double longitude, TimeAndDay time){
+        super(time);
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public LocationData(int day, int month, int year, int hour, int minute, int second, double latitude, double longitude){
-        this.timeStamp = new TimeAndDay(day, month, year, hour, minute, second);
-
+    public LocationData(double longitude,int day, int month, int year, int hour, int minute, int second, double latitude){
+        super(day, month, year, hour, minute, second);
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -31,19 +29,6 @@ public class LocationData {
     public void setId(int id) {
         this.id = id;
     }
-
-    public TimeAndDay getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTime(TimeAndDay time) {
-        this.timeStamp = time;
-    }
-
-    public void setTime(int day, int month, int year, int hour, int minute, int second) {
-        this.timeStamp = new TimeAndDay(day, month, year, hour, minute, second);
-    }
-
 
     public double getLatitude() {
         return latitude;
@@ -63,9 +48,14 @@ public class LocationData {
 
     @Override
     public String toString() {
-        return "LocationData{" +
+        return "\nLocationData{" +
                 "id=" + id +
-                ", timeStamp=" + timeStamp +
+                ", day=" + day +
+                ", month=" + month +
+                ", year=" + year +
+                ", hour=" + hour +
+                ", minute=" + minute +
+                ", second=" + second +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 '}';

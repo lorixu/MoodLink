@@ -19,11 +19,15 @@ public class PhoneReceiver extends BroadcastReceiver {
     static TelephonyManager telManager = null;
     Boolean recordStarted = false;
 
+    private SQLLiteDBHelper db;
+
+
     @Override
     public void onReceive(Context context, Intent intent) {
         recorder = new MediaRecorder();
         telManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
+        db = new SQLLiteDBHelper(context.getApplicationContext());
 
         Log.d(TAG, "onReceive: Phone call");
         // Phone call recording
@@ -53,6 +57,12 @@ public class PhoneReceiver extends BroadcastReceiver {
                 String fileName = month + day + year + "_" + hour + minute + ".mp3";
 
                 file = new File(context.getString(R.string.phone_recorder_storage), fileName);
+
+                PhoneData phoneDataItem = new PhoneData(
+                        context.getString(R.string.phone_recorder_storage)+"/"+fileName,
+                        new TimeAndDay(Calendar.getInstance())
+                );
+                db.addPhoneTuple(phoneDataItem);
 
                 recorder.setOutputFile(file.getPath());
                 recorder.prepare();
@@ -85,6 +95,7 @@ public class PhoneReceiver extends BroadcastReceiver {
                         if (recordStarted) {
                             recorder.stop();
                             recordStarted = false;
+                            db.close();
                         }
                         break;
                     }

@@ -29,6 +29,8 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
+import java.util.Calendar;
+
 public class LocationService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     protected static final String TAG = "LOCATION SERVICE";
@@ -36,15 +38,19 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest locRequest;
 
+    private SQLLiteDBHelper db;
+
+
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate: Service created!");
+
+        db = new SQLLiteDBHelper(getApplicationContext());
 
 
         locRequest = createLocationRequest();
@@ -71,10 +77,9 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onDestroy() {
-
-        mGoogleApiClient.disconnect();
-
         super.onDestroy();
+        mGoogleApiClient.disconnect();
+        db.close();
     }
 
     @Override
@@ -124,5 +129,12 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
                         String.valueOf(location.getLatitude()) + " lat, " +
                         String.valueOf(location.getLongitude()) + " long",
                 Toast.LENGTH_SHORT).show();
+
+        LocationData locationDataItem = new LocationData(
+                location.getLatitude(),
+                location.getLongitude(),
+                new TimeAndDay(Calendar.getInstance())
+        );
+        db.addLocationTuple(locationDataItem);
     }
 }

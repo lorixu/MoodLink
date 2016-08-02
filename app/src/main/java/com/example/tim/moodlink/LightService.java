@@ -14,13 +14,14 @@ import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-
-
+import java.util.Calendar;
 
 
 public class LightService extends Service {
 
     public static String TAG = "LIGHT SERVICE";
+
+    private SQLLiteDBHelper db;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -29,6 +30,8 @@ public class LightService extends Service {
 
     @Override
     public void onCreate() {
+
+        db = new SQLLiteDBHelper(getApplicationContext());
 
         LightSensor lSensor = new LightSensor();
         lSensor.getAverageLuminosity();
@@ -39,6 +42,7 @@ public class LightService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: Service stopped!");
+        db.close();
     }
 
 
@@ -63,9 +67,8 @@ public class LightService extends Service {
                 @Override
                 public void run() {
                     mSensor.unregisterListener(LightSensor.this);
-                    writeToFile();
+                    saveData();
                     Toast.makeText(LightService.this, "Average Luminosity : " + average(luxValues), Toast.LENGTH_SHORT).show();
-                    Log.i(TAG, "Avg luminosity = "+average(luxValues)+" lux");
                     LightService.this.stopSelf();
                 }
             };
@@ -76,27 +79,21 @@ public class LightService extends Service {
             handler.postDelayed(unregisterRunnable, 10000);
         }
 
-        public float average(ArrayList<Float> list)
+        public int average(ArrayList<Float> list)
         {
             double average = 0.0;
             for (int i = 0; i < list.size(); i++)  {
                 average += list.get(i) ;
             }
-            return (float) average/list.size();
+            return (int) average/list.size();
         }
 
-        private void writeToFile(){
-
-            FileOutputStream output;
-
-            try {
-                output = openFileOutput(getString(R.string.light_values_file), MODE_APPEND);
-                output.write((Float.toString(average(luxValues))+',').getBytes());
-                output.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        private void saveData(){
+            LightData lightDataItem = new LightData(
+                    average(luxValues),
+                    new TimeAndDay(Calendar.getInstance())
+            );
+            db.addLightTuple(lightDataItem);
         }
 
         @Override

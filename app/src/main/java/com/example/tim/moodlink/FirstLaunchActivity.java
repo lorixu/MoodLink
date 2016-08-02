@@ -5,12 +5,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
-
-import java.io.FileOutputStream;
 
 public class FirstLaunchActivity extends AppCompatActivity {
 
@@ -19,10 +19,14 @@ public class FirstLaunchActivity extends AppCompatActivity {
     private EditText practitionerPhoneEditText = null;
     private EditText practitionerEmailEditText = null;
 
+    private SQLLiteDBHelper db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_launch);
+
+        db = new SQLLiteDBHelper(getApplicationContext());
 
         usernameEditText = (EditText) findViewById(R.id.username_editText);
         practitionerNameEditText = (EditText) findViewById(R.id.first_contact_name_editText);
@@ -37,26 +41,31 @@ public class FirstLaunchActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if(allFieldsFulled()){
-                    createFiles();
+                    if(wellFormedEmail(practitionerEmailEditText.getText().toString()) && wellFormedPhone(practitionerPhoneEditText.getText().toString())) {
 
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(FirstLaunchActivity.this);
-                    SharedPreferences.Editor edit = prefs.edit();
+                        createFiles();
 
-                    edit.putBoolean(getString(R.string.PREF_PREVIOUSLY_STARTED), Boolean.TRUE);
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(FirstLaunchActivity.this);
+                        SharedPreferences.Editor edit = prefs.edit();
 
-                    edit.apply();
+                        edit.putBoolean(getString(R.string.PREF_PREVIOUSLY_STARTED), Boolean.TRUE);
 
-                    Intent intent = new Intent(FirstLaunchActivity.this, MainActivity.class);
-                    startActivity(intent);
+                        edit.apply();
 
-                    // Set the alarm manager
+                        Intent intent = new Intent(FirstLaunchActivity.this, MainActivity.class);
+                        startActivity(intent);
 
-                    Intent setAlarmManagerIntent = new Intent(FirstLaunchActivity.this, SetAlarmManagerService.class);
-                    setAlarmManagerIntent.setAction(SetAlarmManagerService.START_SERVICE);
-                    setAlarmManagerIntent.putExtra(SetAlarmManagerService.SERVICE_ID,AlarmReceiver.ALL_SERVICES);
-                    FirstLaunchActivity.this.startService(setAlarmManagerIntent);
+                        // Set the alarm manager
 
-                    finish();
+                        Intent setAlarmManagerIntent = new Intent(FirstLaunchActivity.this, SetAlarmManagerService.class);
+                        setAlarmManagerIntent.setAction(SetAlarmManagerService.START_SERVICE);
+                        setAlarmManagerIntent.putExtra(SetAlarmManagerService.SERVICE_ID,AlarmReceiver.ALL_SERVICES);
+                        FirstLaunchActivity.this.startService(setAlarmManagerIntent);
+
+                        finish();
+                    }else{
+                        Toast.makeText(FirstLaunchActivity.this, "Phone or Email not valid", Toast.LENGTH_SHORT).show();
+                    }
 
                 }else{
 
@@ -77,41 +86,31 @@ public class FirstLaunchActivity extends AppCompatActivity {
     private void createFiles(){
         // Creation of the username file
 
-        FileOutputStream output;
-        try {
-            output = openFileOutput(getString(R.string.username_file), MODE_PRIVATE);
-
-            output.write(usernameEditText.getText().toString().getBytes());
-
-            output.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        db.addUsernameTuple(new UsernameData(usernameEditText.getText().toString()));
 
         // Creation of the contacts file
 
-        try {
-            output = openFileOutput(getString(R.string.contacts_file), MODE_PRIVATE);
+        db.addContactTuple(new ContactData(
+                practitionerNameEditText.getText().toString(),
+                ContactData.PRACTITIONER,
+                practitionerPhoneEditText.getText().toString(),
+                practitionerEmailEditText.getText().toString()
+        ));
+    }
 
-            output.write(("practitioner" + "," + practitionerNameEditText.getText().toString() + "," + practitionerPhoneEditText.getText().toString() + "," + practitionerEmailEditText.getText().toString() + "\n" ).getBytes());
 
-            output.close();
+    boolean wellFormedEmail(String email) {
+        return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    boolean wellFormedPhone(String phone) {
+        return !TextUtils.isEmpty(phone) && Patterns.PHONE.matcher(phone).matches();
+    }
 
-        try {
-            output = openFileOutput(getString(R.string.light_values_file), MODE_PRIVATE);
-
-            output.write("".getBytes());
-
-            output.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        db.close();
     }
 }
 

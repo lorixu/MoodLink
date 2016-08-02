@@ -14,13 +14,15 @@ import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class AccelerometerService extends Service {
 
     public static String TAG = "ACCELEROMETER SERVICE";
 
-    protected double[] lastValues = new double[]{0,0,0};
+    protected int[] lastValues = new int[]{0,0,0};
+    private SQLLiteDBHelper db;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -31,6 +33,7 @@ public class AccelerometerService extends Service {
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate: Service created!");
+        db = new SQLLiteDBHelper(getApplicationContext());
         AccelerometerSensor aSensor = new AccelerometerSensor();
         aSensor.trackMovements();
     }
@@ -38,6 +41,7 @@ public class AccelerometerService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: Service stopped!");
+        db.close();
     }
 
 
@@ -73,37 +77,32 @@ public class AccelerometerService extends Service {
         @Override
         public void onSensorChanged(SensorEvent event) {
 
-            double[] values = new double[]{truncateDouble(event.values[0]),truncateDouble(event.values[1]),truncateDouble(event.values[2])};
-            if ((lastValues[0] - 1 > values[0] || lastValues[0] + 1 < values[0]) ||
-                    (lastValues[1] - 1 > values[1] || lastValues[1] + 1 < values[1]) ||
-                    (lastValues[2] - 1 > values[2] || lastValues[2] + 1 < values[2]) ) {
+            int[] values = new int[]{(int)event.values[0],(int)event.values[1],(int)event.values[2]};
+            if ((lastValues[0] - 2 > values[0] || lastValues[0] + 2 < values[0]) ||
+                    (lastValues[1] - 2 > values[1] || lastValues[1] + 2 < values[1]) ||
+                    (lastValues[2] - 2 > values[2] || lastValues[2] + 2 < values[2]) ) {
 
-                Log.d(TAG, "Values Accelerometer :" +
-                        // Acceleration on x axis
-                        Double.toString(values[0]) + "," +
-                        // Acceleration on y axis
-                        Double.toString(values[1]) + "," +
-                        // Acceleration on z axis
-                        Double.toString(values[2]));
+                AccelerometerData accelerometerDataItem = new AccelerometerData(
+                        values[0],
+                        values[1],
+                        values[2],
+                        new TimeAndDay(Calendar.getInstance())
+                );
+                db.addAccelerometerTuple(accelerometerDataItem);
 
                 Toast.makeText(AccelerometerService.this,
                         "Values Accelerometer :" +
                                 // Acceleration on x axis
-                                Double.toString(values[0]) + "," +
+                                Integer.toString(values[0]) + "," +
                                 // Acceleration on y axis
-                                Double.toString(values[1]) + "," +
+                                Integer.toString(values[1]) + "," +
                                 // Acceleration on z axis
-                                Double.toString(values[2]),
+                                Integer.toString(values[2]),
                         Toast.LENGTH_SHORT)
                         .show();
 
                 lastValues = values;
             }
-        }
-
-        double truncateDouble(double nb){
-            int coef = 1;
-            return Math.floor(nb * coef) / coef;
         }
 
         @Override

@@ -22,13 +22,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.ArrayList;
 
 public class SettingsActivity extends AppCompatActivity {
 
     public static String TAG = "SETTING ACTIVITY";
+
+    public SQLLiteDBHelper db;
 
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -36,6 +36,9 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        db = new SQLLiteDBHelper(getApplicationContext());
+
 
         ImageButton return_button = (ImageButton) findViewById(R.id.return_button);
 
@@ -47,36 +50,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-
-        // VALUES SAVING TEST
-
-        //spinner
-        Spinner valueSpinner = (Spinner) findViewById(R.id.spinnerValues);
-
-        String[] valueItemsList = getResources().getStringArray(R.array.value_items_settings);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, valueItemsList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        valueSpinner.setAdapter(adapter);
-
-        valueSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                TextView itemSelected = (TextView) view;
-
-                switch (itemSelected.getText().toString()) {
-                    case "Luminosity":
-                        setButtonsOnLuminosity();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-// TODO : switches
-        // Services on/off switch
+        // Services on/off switches
 
         CheckBox lightCheckBox = (CheckBox) findViewById(R.id.LightServiceCheckBox);
         CheckBox cameraCheckBox = (CheckBox) findViewById(R.id.CameraServiceCheckBox);
@@ -233,59 +207,143 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        // VALUES SAVING TEST
+
+        //spinner
+        Spinner valueSpinner = (Spinner) findViewById(R.id.spinnerValues);
+
+        String[] valueItemsList = getResources().getStringArray(R.array.value_items_settings);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, valueItemsList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        valueSpinner.setAdapter(adapter);
+
+        valueSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+
+                Button dataButton = (Button) findViewById(R.id.buttonPrintValues);
+                Button deleteButton = (Button) findViewById(R.id.buttonDeleteValues);
+                dataButton.setOnClickListener(null);
+                deleteButton.setOnClickListener(null);
+
+                TextView itemSelected = (TextView) view;
+                Log.d(TAG, "onItemSelected: "+itemSelected.getText().toString());
+                switch (itemSelected.getText().toString()) {
+                    case "Luminosity":
+                        setButtonOnLuminosity(dataButton, deleteButton);
+                        break;
+                    case "Accelerometer":
+                        setButtonOnAccelerometer(dataButton, deleteButton);
+                        break;
+                    case "Location":
+                        setButtonOnLocation(dataButton, deleteButton);
+                        break;
+                    case "Phone":
+                        setButtonOnPhone(dataButton, deleteButton);
+                        break;
+                    case "Camera":
+                        setButtonOnCamera(dataButton, deleteButton);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
-    private void setButtonsOnLuminosity() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        db.close();
+    }
 
-        final Button dataButton = (Button) findViewById(R.id.buttonPrintValues);
-        final Button dataResetButton = (Button) findViewById(R.id.buttonReset);
-
+    private void setButtonOnLuminosity(Button dataButton, Button deleteButton) {
         dataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // File's reading
-                FileInputStream input;
-
-                try {
-                    input = openFileInput("LIGHT_VALUES");
-                    Log.d("FILE READING", "File opened");
-                    int character;
-                    String fileContent = "";
-                    while ((character = input.read()) != -1) {
-                        fileContent += (char) character;
-                    }
-
-                    Log.d("FILE READING", "Values = " + fileContent);
-                    TextView dataText = (TextView) findViewById(R.id.dataPrintingTextView);
-
-                    dataText.setText(fileContent);
-
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                ArrayList<LightData> list = (ArrayList) db.getAllLightDatas();
+                Log.d(TAG, "onClick: " + list.toString());
             }
         });
 
-
-        dataResetButton.setOnClickListener(new View.OnClickListener() {
+        deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // File's writing
-                FileOutputStream output;
+                db.deleteAllLightData();
+            }
+        });
+    }
 
-                try {
-                    output = openFileOutput("LIGHT_VALUES", MODE_PRIVATE);
+    private void setButtonOnAccelerometer(Button dataButton,Button deleteButton) {
+         dataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<AccelerometerData> list = (ArrayList) db.getAllAccelerometerDatas();
+                Log.d(TAG, "onClick: " + list.toString());
+            }
+        });
 
-                    output.write("".getBytes());
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                db.deleteAllAccelerometerData();
+            }
+        });
+    }
 
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                TextView dataText = (TextView) findViewById(R.id.dataPrintingTextView);
+    private void setButtonOnLocation(Button dataButton,Button deleteButton) {
+        dataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<LocationData> list = (ArrayList) db.getAllLocationDatas();
+                Log.d(TAG, "onClick: " + list.toString());
+            }
+        });
 
-                dataText.setText("");
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                db.deleteAllLocationData();
+            }
+        });
+    }
+
+    private void setButtonOnPhone(Button dataButton,Button deleteButton) {
+        dataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<PhoneData> list = (ArrayList) db.getAllPhoneDatas();
+                Log.d(TAG, "onClick: " + list.toString());
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                db.deleteAllPhoneData();
+            }
+        });
+    }
+
+    private void setButtonOnCamera(Button dataButton,Button deleteButton) {
+        dataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<CameraData> list = (ArrayList) db.getAllCameraDatas();
+                Log.d(TAG, "onClick: " + list.toString());
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                db.deleteAllCameraData();
             }
         });
     }

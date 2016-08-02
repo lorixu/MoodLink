@@ -10,27 +10,24 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import android.widget.Toast;
 
 public class AddContactActivity extends AppCompatActivity {
 
-    private ImageButton return_button;
-    private Spinner cat_liste;
-    private String[] categoryItemsList;
-    private ImageButton validate_button;
+    private Spinner cat_list;
+    private SQLLiteDBHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
 
+        db = new SQLLiteDBHelper(getApplicationContext());
+
         // Getting elements
-        return_button = (ImageButton) findViewById(R.id.return_button);
-        cat_liste = (Spinner) findViewById(R.id.spinner_category);
-        validate_button = (ImageButton) findViewById(R.id.validate_button);
+        ImageButton return_button = (ImageButton) findViewById(R.id.return_button);
+        cat_list = (Spinner) findViewById(R.id.spinner_category);
+        ImageButton validate_button = (ImageButton) findViewById(R.id.validate_button);
 
         // Setting actions on elements
             // Return Button
@@ -42,10 +39,10 @@ public class AddContactActivity extends AppCompatActivity {
             }
         });
             //Category spinner
-        categoryItemsList = getResources().getStringArray(R.array.cat_items_new_contact);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categoryItemsList);
+        String[] categoryItemsList = getResources().getStringArray(R.array.cat_items_new_contact);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryItemsList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        cat_liste.setAdapter(adapter);
+        cat_list.setAdapter(adapter);
             // Validate Button
         validate_button.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -60,56 +57,42 @@ public class AddContactActivity extends AppCompatActivity {
                 String name = name_editText.getText().toString();
                 String phone = phone_editText.getText().toString();
                 String email = email_editText.getText().toString();
-                String category = cat_liste.getSelectedItem().toString();
+                String category = cat_list.getSelectedItem().toString();
 
                 if(wellFormedEmail(email) && wellFormedPhone(phone)) {
 
-                    String toWrite = category + "," + name + "," + phone + "," + email + "\n";
+                    db.addContactTuple(new ContactData(
+                            name,
+                            category,
+                            phone,
+                            email
+                    ));
 
-                    // Creation of the contacts file
-                    FileOutputStream output = null;
 
-                    try {
-                        output = openFileOutput(getString(R.string.contacts_file), MODE_APPEND);
-
-                        output.write(toWrite.getBytes());
-                        if (output != null)
-                            output.close();
-
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
 
                     Intent intent = new Intent(AddContactActivity.this, EmergencyContactsActivity.class);
                     startActivity(intent);
+
                     finish();
-                }else{
-                    //TODO : ajouter Toast
+                    }else{
+                    Toast.makeText(AddContactActivity.this, "Phone or Email not valid", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        db.close();
+    }
+
     boolean wellFormedEmail(String email) {
-        boolean result = true;
-        if (TextUtils.isEmpty(email)) {
-            result = false;
-        } else {
-            result = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
-        }
-        return result;
+        return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     boolean wellFormedPhone(String phone) {
-        boolean result = true;
-        if (TextUtils.isEmpty(phone)) {
-            result = false;
-        } else {
-            result = Patterns.PHONE.matcher(phone).matches();
-        }
-        return result;
+        return !TextUtils.isEmpty(phone) && Patterns.PHONE.matcher(phone).matches();
     }
 }
 

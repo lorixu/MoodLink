@@ -1,22 +1,19 @@
 package com.example.tim.moodlink;
 
-/**
- * Created by Tim on 22/07/2016.
- */
-public class CameraData {
+
+public class CameraData extends SensorData{
 
     private int id;
-    private TimeAndDay timeStamp;
     private String path;
 
 
-    public CameraData(TimeAndDay time, String path){
-        this.timeStamp = time;
+    public CameraData( String path, TimeAndDay time){
+        super(time);
         this.path = path;
     }
 
-    public CameraData(int day, int month, int year, int hour, int minute, int second, String path){
-        this.timeStamp = new TimeAndDay(day, month, year, hour, minute, second);
+    public CameraData( String path, int day, int month, int year, int hour, int minute, int second){
+        super(day, month, year, hour, minute, second);
         this.path = path;
     }
 
@@ -28,31 +25,20 @@ public class CameraData {
         this.id = id;
     }
 
-    public TimeAndDay getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTime(TimeAndDay time) {
-        this.timeStamp = time;
-    }
-
-    public void setTime(int day, int month, int year, int hour, int minute, int second) {
-        this.timeStamp = new TimeAndDay(day, month, year, hour, minute, second);
-    }
-
     public String getPath() {
         return path;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
     @Override
     public String toString() {
-        return "CameraData{" +
+        return "\nCameraData{" +
                 "id=" + id +
-                ", timeStamp=" + timeStamp +
+                ", day=" + day +
+                ", month=" + month +
+                ", year=" + year +
+                ", hour=" + hour +
+                ", minute=" + minute +
+                ", second=" + second +
                 ", path='" + path + '\'' +
                 '}';
     }

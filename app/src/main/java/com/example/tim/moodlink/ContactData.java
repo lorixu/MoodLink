@@ -5,6 +5,11 @@ package com.example.tim.moodlink;
  */
 public class ContactData {
 
+    public static final String PRACTITIONER = "Practitioner";
+    public static final String FAMILY = "Family";
+    public static final String FRIEND = "Friend";
+    public static final String COWORKER = "Co-Worker";
+
     private int id;
     private String name;
     private String category;

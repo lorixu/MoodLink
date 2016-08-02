@@ -1,14 +1,19 @@
 package com.example.tim.moodlink;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
-
-        // TODO : CRUD (Create, Read, Update and Delete) Operations
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLLiteDBHelper extends SQLiteOpenHelper {
+
+    private static final String DATABASE_NAME = "Moodlink_DB";
+    private static final int DATABASE_VERSION = 1;
 
     private static final String USERNAME_TABLE = "username_table";
     private static final String CONTACTS_TABLE = "contacts_table";
@@ -65,14 +70,14 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
     private static final String CREATE_CONTACTS_TABLE = "CREATE TABLE " + CONTACTS_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_NAME + " TEXT NOT NULL, " +
-            COL_CATEGORY + " TEXT NOT NULL" +
+            COL_CATEGORY + " TEXT NOT NULL," +
             COL_PHONE + " TEXT NOT NULL, " +
             COL_EMAIL + " TEXT NOT NULL );";
 
     private static final String CREATE_LIGHT_TABLE = "CREATE TABLE " + LIGHT_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_DAY + " INTEGER NOT NULL, " +
-            COL_MONTH + " INTEGER NOT NULL" +
+            COL_MONTH + " INTEGER NOT NULL," +
             COL_YEAR + " INTEGER NOT NULL, " +
             COL_HOUR + " INTEGER NOT NULL, " +
             COL_MINUTES + " INTEGER NOT NULL, " +
@@ -82,7 +87,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
     private static final String CREATE_CAMERA_TABLE = "CREATE TABLE " + CAMERA_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_DAY + " INTEGER NOT NULL, " +
-            COL_MONTH + " INTEGER NOT NULL" +
+            COL_MONTH + " INTEGER NOT NULL," +
             COL_YEAR + " INTEGER NOT NULL, " +
             COL_HOUR + " INTEGER NOT NULL, " +
             COL_MINUTES + " INTEGER NOT NULL, " +
@@ -92,7 +97,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
     private static final String CREATE_PHONE_TABLE = "CREATE TABLE " + PHONE_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_DAY + " INTEGER NOT NULL, " +
-            COL_MONTH + " INTEGER NOT NULL" +
+            COL_MONTH + " INTEGER NOT NULL," +
             COL_YEAR + " INTEGER NOT NULL, " +
             COL_HOUR + " INTEGER NOT NULL, " +
             COL_MINUTES + " INTEGER NOT NULL, " +
@@ -102,7 +107,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
     private static final String CREATE_ACCELEROMETER_TABLE = "CREATE TABLE " + ACCELEROMETER_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_DAY + " INTEGER NOT NULL, " +
-            COL_MONTH + " INTEGER NOT NULL" +
+            COL_MONTH + " INTEGER NOT NULL," +
             COL_YEAR + " INTEGER NOT NULL, " +
             COL_HOUR + " INTEGER NOT NULL, " +
             COL_MINUTES + " INTEGER NOT NULL, " +
@@ -114,7 +119,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
     private static final String CREATE_LOCATION_TABLE = "CREATE TABLE " + LOCATION_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_DAY + " INTEGER NOT NULL, " +
-            COL_MONTH + " INTEGER NOT NULL" +
+            COL_MONTH + " INTEGER NOT NULL," +
             COL_YEAR + " INTEGER NOT NULL, " +
             COL_HOUR + " INTEGER NOT NULL, " +
             COL_MINUTES + " INTEGER NOT NULL, " +
@@ -122,8 +127,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
             COL_LOCATION_LAT + " REEL NOT NULL," +
             COL_LOCATION_LONG + " REEL NOT NULL);";
 
-    public SQLLiteDBHelper(Context context, String name, CursorFactory factory, int version) {
-        super(context, name, factory, version);
+    public SQLLiteDBHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -135,6 +140,12 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_LOCATION_TABLE);
         db.execSQL(CREATE_CAMERA_TABLE);
         db.execSQL(CREATE_PHONE_TABLE);
+    }
+
+    public void closeDB() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        if (db != null && db.isOpen())
+            db.close();
     }
 
     @Override
@@ -150,4 +161,589 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // CRUD (Create, Read, Update and Delete) Operations
+
+    public ContentValues setContentValueTime(ContentValues values, SensorData data) {
+        values.put(COL_DAY, data.getDay());
+        values.put(COL_MONTH, data.getMonth());
+        values.put(COL_YEAR, data.getYear());
+        values.put(COL_HOUR, data.getHour());
+        values.put(COL_MINUTES, data.getMinute());
+        values.put(COL_SECONDS, data.getSecond());
+        return values;
+    }
+
+    // Username table
+
+    public long addUsernameTuple(UsernameData username) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_USERNAME, username.getUsername());
+
+        // insert row
+        long username_id = db.insert(USERNAME_TABLE, null, values);
+
+        return username_id;
+    }
+
+    public UsernameData getUsernameData() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + USERNAME_TABLE + " WHERE "
+                + COL_ID + " = 1";
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.moveToFirst()) {
+
+            UsernameData username = new UsernameData(c.getString(c.getColumnIndex(COL_USERNAME)));
+            username.setId(c.getInt(c.getColumnIndex(COL_ID)));
+            c.close();
+            return username;
+        } else return new UsernameData("");
+    }
+
+    public int updateUsername(UsernameData usernameData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_USERNAME, usernameData.getUsername());
+
+        // updating row
+        return db.update(USERNAME_TABLE, values, COL_ID + " = 1", null);
+    }
+
+    public void deleteUsername() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(USERNAME_TABLE, COL_ID + " = 1", null);
+    }
+
+    //Contacts table
+
+    public long addContactTuple(ContactData contactData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_NAME, contactData.getName());
+        values.put(COL_CATEGORY, contactData.getCategory());
+        values.put(COL_PHONE, contactData.getPhone());
+        values.put(COL_EMAIL, contactData.getEmail());
+
+        // insert row
+        long contact_id = db.insert(CONTACTS_TABLE, null, values);
+
+        return contact_id;
+    }
+
+    public ContactData getContactData(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + CONTACTS_TABLE + " WHERE "
+                + COL_ID + " = " + id;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+
+        ContactData contactData = new ContactData(
+                c.getString(c.getColumnIndex(COL_NAME)),
+                c.getString(c.getColumnIndex(COL_CATEGORY)),
+                c.getString(c.getColumnIndex(COL_PHONE)),
+                c.getString(c.getColumnIndex(COL_EMAIL)));
+        contactData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+        return contactData;
+    }
+
+    public ContactData getContactDataByRowNumber(int row) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + CONTACTS_TABLE + " WHERE rowid = " + row + 1;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.moveToFirst()) {
+
+
+            ContactData contactData = new ContactData(
+                    c.getString(c.getColumnIndex(COL_NAME)),
+                    c.getString(c.getColumnIndex(COL_CATEGORY)),
+                    c.getString(c.getColumnIndex(COL_PHONE)),
+                    c.getString(c.getColumnIndex(COL_EMAIL)));
+            contactData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+            return contactData;
+        } else return null;
+    }
+
+    public List<ContactData> getAllContactDatas() {
+        List<ContactData> contactDatas = new ArrayList<ContactData>();
+        String selectQuery = "SELECT  * FROM " + CONTACTS_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                ContactData contactData = new ContactData(
+                        c.getString(c.getColumnIndex(COL_NAME)),
+                        c.getString(c.getColumnIndex(COL_CATEGORY)),
+                        c.getString(c.getColumnIndex(COL_PHONE)),
+                        c.getString(c.getColumnIndex(COL_EMAIL)));
+                contactData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+                
+                contactDatas.add(contactData);
+            } while (c.moveToNext());
+        }
+
+        return contactDatas;
+    }
+
+    public int updateContactData(long idToUpdate, ContactData contactData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_NAME, contactData.getName());
+        values.put(COL_CATEGORY, contactData.getCategory());
+        values.put(COL_PHONE, contactData.getPhone());
+        values.put(COL_EMAIL, contactData.getEmail());
+
+        // updating row
+        return db.update(CONTACTS_TABLE, values, COL_ID + " = " + idToUpdate, null);
+    }
+
+    public int updateContactDataByRowNumber(int row, ContactData contactData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_NAME, contactData.getName());
+        values.put(COL_CATEGORY, contactData.getCategory());
+        values.put(COL_PHONE, contactData.getPhone());
+        values.put(COL_EMAIL, contactData.getEmail());
+
+        // updating row
+        return db.update(CONTACTS_TABLE, values, "rowid = " + row + 1, null);
+    }
+
+    public void deleteContact(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(CONTACTS_TABLE, COL_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    public void deleteContactByRowNumber(int row) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(CONTACTS_TABLE, "rowid = ?",
+                new String[]{String.valueOf(row)});
+    }
+
+    // Light Data table
+
+    public long addLightTuple(LightData lightData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_LUX_VALUE, lightData.getLuxValue());
+
+        values = setContentValueTime(values, lightData);
+
+        // insert row
+        long light_data_id = db.insert(LIGHT_TABLE, null, values);
+
+        return light_data_id;
+    }
+
+    public LightData getLightData(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + LIGHT_TABLE + " WHERE "
+                + COL_ID + " = " + id;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+
+        LightData lightData = new LightData(c.getInt(
+                c.getColumnIndex(COL_LUX_VALUE)),
+                c.getInt(c.getColumnIndex(COL_DAY)),
+                c.getInt(c.getColumnIndex(COL_MONTH)),
+                c.getInt(c.getColumnIndex(COL_YEAR)),
+                c.getInt(c.getColumnIndex(COL_HOUR)),
+                c.getInt(c.getColumnIndex(COL_MINUTES)),
+                c.getInt(c.getColumnIndex(COL_SECONDS)));
+        lightData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+        return lightData;
+    }
+
+    public List<LightData> getAllLightDatas() {
+        List<LightData> lightDatas = new ArrayList<LightData>();
+        String selectQuery = "SELECT  * FROM " + LIGHT_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                LightData lightData = new LightData(c.getInt(
+                        c.getColumnIndex(COL_LUX_VALUE)),
+                        c.getInt(c.getColumnIndex(COL_DAY)),
+                        c.getInt(c.getColumnIndex(COL_MONTH)),
+                        c.getInt(c.getColumnIndex(COL_YEAR)),
+                        c.getInt(c.getColumnIndex(COL_HOUR)),
+                        c.getInt(c.getColumnIndex(COL_MINUTES)),
+                        c.getInt(c.getColumnIndex(COL_SECONDS)));
+                lightData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+                
+                lightDatas.add(lightData);
+            } while (c.moveToNext());
+        }
+
+        return lightDatas;
+    }
+
+    public void deleteLightData(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(LIGHT_TABLE, COL_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    public void deleteAllLightData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(LIGHT_TABLE, null, null);
+    }
+
+    // Accelerometer Data table
+
+    public long addAccelerometerTuple(AccelerometerData accelerometerData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_ACCELEROMETER_X, accelerometerData.getxAxisValue());
+        values.put(COL_ACCELEROMETER_Y, accelerometerData.getyAxisValue());
+        values.put(COL_ACCELEROMETER_Z, accelerometerData.getzAxisValue());
+
+
+        values = setContentValueTime(values, accelerometerData);
+
+        // insert row
+        long accelerometer_data_id = db.insert(ACCELEROMETER_TABLE, null, values);
+
+        return accelerometer_data_id;
+    }
+
+    public AccelerometerData getAccelerometerData(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + ACCELEROMETER_TABLE + " WHERE "
+                + COL_ID + " = " + id;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+
+        AccelerometerData accelerometerData = new AccelerometerData(
+                c.getInt(c.getColumnIndex(COL_ACCELEROMETER_X)),
+                c.getInt(c.getColumnIndex(COL_ACCELEROMETER_Y)),
+                c.getInt(c.getColumnIndex(COL_ACCELEROMETER_Z)),
+                c.getInt(c.getColumnIndex(COL_DAY)),
+                c.getInt(c.getColumnIndex(COL_MONTH)),
+                c.getInt(c.getColumnIndex(COL_YEAR)),
+                c.getInt(c.getColumnIndex(COL_HOUR)),
+                c.getInt(c.getColumnIndex(COL_MINUTES)),
+                c.getInt(c.getColumnIndex(COL_SECONDS)));
+        accelerometerData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+        return accelerometerData;
+    }
+
+    public List<AccelerometerData> getAllAccelerometerDatas() {
+        List<AccelerometerData> accelerometerDatas = new ArrayList<AccelerometerData>();
+        String selectQuery = "SELECT  * FROM " + ACCELEROMETER_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                AccelerometerData accelerometerData = new AccelerometerData(
+                        c.getInt(c.getColumnIndex(COL_ACCELEROMETER_X)),
+                        c.getInt(c.getColumnIndex(COL_ACCELEROMETER_Y)),
+                        c.getInt(c.getColumnIndex(COL_ACCELEROMETER_Z)),
+                        c.getInt(c.getColumnIndex(COL_DAY)),
+                        c.getInt(c.getColumnIndex(COL_MONTH)),
+                        c.getInt(c.getColumnIndex(COL_YEAR)),
+                        c.getInt(c.getColumnIndex(COL_HOUR)),
+                        c.getInt(c.getColumnIndex(COL_MINUTES)),
+                        c.getInt(c.getColumnIndex(COL_SECONDS)));
+                accelerometerData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+                
+                accelerometerDatas.add(accelerometerData);
+            } while (c.moveToNext());
+        }
+
+        return accelerometerDatas;
+    }
+
+    public void deleteAccelerometerData(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(ACCELEROMETER_TABLE, COL_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    public void deleteAllAccelerometerData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(ACCELEROMETER_TABLE, null, null);
+    }
+
+    // Location Data table
+
+    public long addLocationTuple(LocationData locationData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(COL_LOCATION_LAT, locationData.getLatitude());
+        values.put(COL_LOCATION_LONG, locationData.getLongitude());
+
+
+        values = setContentValueTime(values, locationData);
+
+        // insert row
+        long location_data_id = db.insert(LOCATION_TABLE, null, values);
+
+        return location_data_id;
+    }
+
+    public LocationData getLocationData(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + LOCATION_TABLE + " WHERE "
+                + COL_ID + " = " + id;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+
+        LocationData locationData = new LocationData(
+                c.getInt(c.getColumnIndex(COL_LOCATION_LAT)),
+                c.getInt(c.getColumnIndex(COL_LOCATION_LONG)),
+                c.getInt(c.getColumnIndex(COL_DAY)),
+                c.getInt(c.getColumnIndex(COL_MONTH)),
+                c.getInt(c.getColumnIndex(COL_YEAR)),
+                c.getInt(c.getColumnIndex(COL_HOUR)),
+                c.getInt(c.getColumnIndex(COL_MINUTES)),
+                c.getInt(c.getColumnIndex(COL_SECONDS)));
+        locationData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+        return locationData;
+    }
+
+    public List<LocationData> getAllLocationDatas() {
+        List<LocationData> locationDatas = new ArrayList<LocationData>();
+        String selectQuery = "SELECT  * FROM " + LOCATION_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                LocationData locationData = new LocationData(
+                        c.getInt(c.getColumnIndex(COL_LOCATION_LAT)),
+                        c.getInt(c.getColumnIndex(COL_LOCATION_LONG)),
+                        c.getInt(c.getColumnIndex(COL_DAY)),
+                        c.getInt(c.getColumnIndex(COL_MONTH)),
+                        c.getInt(c.getColumnIndex(COL_YEAR)),
+                        c.getInt(c.getColumnIndex(COL_HOUR)),
+                        c.getInt(c.getColumnIndex(COL_MINUTES)),
+                        c.getInt(c.getColumnIndex(COL_SECONDS)));
+                locationData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+                
+                locationDatas.add(locationData);
+            } while (c.moveToNext());
+        }
+
+        return locationDatas;
+    }
+
+    public void deleteLocationData(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(LOCATION_TABLE, COL_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    public void deleteAllLocationData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(LOCATION_TABLE, null, null);
+    }
+
+    // Camera Data Table
+
+    public long addCameraTuple(CameraData cameraData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_PIC_PATH, cameraData.getPath());
+        values = setContentValueTime(values, cameraData);
+
+        // insert row
+        long camera_data_id = db.insert(CAMERA_TABLE, null, values);
+
+        return camera_data_id;
+    }
+
+    public CameraData getCameraData(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + CAMERA_TABLE + " WHERE "
+                + COL_ID + " = " + id;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+
+        CameraData cameraData = new CameraData(
+                c.getString(c.getColumnIndex(COL_PIC_PATH)),
+                c.getInt(c.getColumnIndex(COL_DAY)),
+                c.getInt(c.getColumnIndex(COL_MONTH)),
+                c.getInt(c.getColumnIndex(COL_YEAR)),
+                c.getInt(c.getColumnIndex(COL_HOUR)),
+                c.getInt(c.getColumnIndex(COL_MINUTES)),
+                c.getInt(c.getColumnIndex(COL_SECONDS)));
+        cameraData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+        return cameraData;
+    }
+
+    public List<CameraData> getAllCameraDatas() {
+        List<CameraData> cameraDatas = new ArrayList<CameraData>();
+        String selectQuery = "SELECT  * FROM " + CAMERA_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                CameraData cameraData = new CameraData(
+                        c.getString(c.getColumnIndex(COL_PIC_PATH)),
+                        c.getInt(c.getColumnIndex(COL_DAY)),
+                        c.getInt(c.getColumnIndex(COL_MONTH)),
+                        c.getInt(c.getColumnIndex(COL_YEAR)),
+                        c.getInt(c.getColumnIndex(COL_HOUR)),
+                        c.getInt(c.getColumnIndex(COL_MINUTES)),
+                        c.getInt(c.getColumnIndex(COL_SECONDS)));
+                cameraData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+
+                
+                cameraDatas.add(cameraData);
+            } while (c.moveToNext());
+        }
+
+        return cameraDatas;
+    }
+
+    public void deleteCameraData(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(CAMERA_TABLE, COL_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    public void deleteAllCameraData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(CAMERA_TABLE, null, null);
+    }
+
+    // Phone Data Table
+
+    public long addPhoneTuple(PhoneData phoneData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_REC_PATH, phoneData.getPath());
+        values = setContentValueTime(values, phoneData);
+
+        // insert row
+        long phone_data_id = db.insert(PHONE_TABLE, null, values);
+
+        return phone_data_id;
+    }
+
+    public PhoneData getPhoneData(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + PHONE_TABLE + " WHERE "
+                + COL_ID + " = " + id;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+
+        PhoneData phoneData = new PhoneData(
+                c.getString(c.getColumnIndex(COL_REC_PATH)),
+                c.getInt(c.getColumnIndex(COL_DAY)),
+                c.getInt(c.getColumnIndex(COL_MONTH)),
+                c.getInt(c.getColumnIndex(COL_YEAR)),
+                c.getInt(c.getColumnIndex(COL_HOUR)),
+                c.getInt(c.getColumnIndex(COL_MINUTES)),
+                c.getInt(c.getColumnIndex(COL_SECONDS)));
+        phoneData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+        return phoneData;
+    }
+
+    public List<PhoneData> getAllPhoneDatas() {
+        List<PhoneData> phoneDatas = new ArrayList<PhoneData>();
+        String selectQuery = "SELECT  * FROM " + PHONE_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                PhoneData phoneData = new PhoneData(
+                        c.getString(c.getColumnIndex(COL_REC_PATH)),
+                        c.getInt(c.getColumnIndex(COL_DAY)),
+                        c.getInt(c.getColumnIndex(COL_MONTH)),
+                        c.getInt(c.getColumnIndex(COL_YEAR)),
+                        c.getInt(c.getColumnIndex(COL_HOUR)),
+                        c.getInt(c.getColumnIndex(COL_MINUTES)),
+                        c.getInt(c.getColumnIndex(COL_SECONDS)));
+                phoneData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+
+                
+                phoneDatas.add(phoneData);
+            } while (c.moveToNext());
+        }
+
+        return phoneDatas;
+    }
+
+    public void deletePhoneData(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(PHONE_TABLE, COL_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    public void deleteAllPhoneData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(PHONE_TABLE, null, null);
+    }
 }

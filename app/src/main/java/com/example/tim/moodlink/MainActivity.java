@@ -19,9 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
+
+// TODO : on boot verify services bool
 
 public class MainActivity extends Activity {
 
@@ -31,6 +31,8 @@ public class MainActivity extends Activity {
     private LinearLayout graphButton;
     private LinearLayout settingsButton;
 
+
+    private SQLLiteDBHelper db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,70 +47,67 @@ public class MainActivity extends Activity {
             finish();
         }
 
-        //Permission for accessing the camera, the external storage ...
 
-        checkPermissions();
+            db = new SQLLiteDBHelper(getApplicationContext());
 
-        // File's reading
-        FileInputStream input;
+            //Permission for accessing the camera, the external storage ...
 
-        try {
-            input = openFileInput(getString(R.string.username_file));
-            int character;
-            String fileContent = "";
-            while ((character = input.read()) != -1) {
-                fileContent += (char) character;
-            }
+            checkPermissions();
+
+            // Username reading
 
             TextView welcomeText = (TextView) findViewById(R.id.welcome_textView);
-            Resources res = getResources();
-            welcomeText.setText(res.getString(R.string.welcome, fileContent));
+            Resources res = getApplicationContext().getResources();
+            welcomeText.setText(res.getString(R.string.welcome, db.getUsernameData().getUsername()));
 
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        myDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            myDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        // Drawer launch
-        String[] drawerItemsList = getResources().getStringArray(R.array.items_drawer);
-        ListView myDrawerList = (ListView) findViewById(R.id.my_drawer);
-        myDrawerList.setAdapter(new ArrayAdapter<>(this,
-                R.layout.drawer_item, R.id.text1, drawerItemsList));
+            // Drawer launch
+            String[] drawerItemsList = getResources().getStringArray(R.array.items_drawer);
+            ListView myDrawerList = (ListView) findViewById(R.id.my_drawer);
+            myDrawerList.setAdapter(new ArrayAdapter<>(this,
+                    R.layout.drawer_item, R.id.text1, drawerItemsList));
 
-        // Drawer Buttons
+            // Drawer Buttons
 
-        ImageButton drawerOpenButton = (ImageButton) findViewById(R.id.imageButton_DrawerClosed);
+            ImageButton drawerOpenButton = (ImageButton) findViewById(R.id.imageButton_DrawerClosed);
 
-        drawerOpenButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myDrawer.openDrawer(Gravity.LEFT);
-            }
-        });
+            drawerOpenButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    myDrawer.openDrawer(Gravity.LEFT);
+                }
+            });
 
-        myDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
+            myDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
 
-            }
+                }
 
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                setDrawerButtons();
-            }
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    setDrawerButtons();
+                }
 
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                unsetDrawerButtons();
-            }
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    unsetDrawerButtons();
+                }
 
-            @Override
-            public void onDrawerStateChanged(int newState) {
+                @Override
+                public void onDrawerStateChanged(int newState) {
 
-            }
-        });
+                }
+            });
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        db.close();
     }
 
     private void setDrawerButtons() {
@@ -176,7 +175,7 @@ public class MainActivity extends Activity {
 
         int MY_PERMISSIONS_REQUEST = 0;
 
-        if (! permissionsToAsk.isEmpty()) {
+        if (!permissionsToAsk.isEmpty()) {
             ActivityCompat.requestPermissions(this,
                     permissionsToAsk.toArray(new String[0]),
                     MY_PERMISSIONS_REQUEST);

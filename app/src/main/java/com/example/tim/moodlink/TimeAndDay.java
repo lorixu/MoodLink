@@ -1,5 +1,7 @@
 package com.example.tim.moodlink;
 
+import java.util.Calendar;
+
 /**
  * Created by Tim on 22/07/2016.
  */
@@ -19,6 +21,15 @@ public class TimeAndDay {
         this.hour = hour;
         this.minute = minute;
         this.second = second;
+    }
+
+    public TimeAndDay(Calendar c){
+        this.day = c.get(Calendar.DAY_OF_MONTH);
+        this.month = c.get(Calendar.MONTH)+1; // January is 0
+        this.year = c.get(Calendar.YEAR);
+        this.hour = c.get(Calendar.HOUR_OF_DAY);
+        this.minute = c.get(Calendar.MINUTE);
+        this.second = c.get(Calendar.SECOND);
     }
 
     public int getDay() {
