@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -344,6 +345,10 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 db.deleteAllCameraData();
+                File dir = new File(getString(R.string.camera_storage));
+                for(File file : dir.listFiles()){
+                    file.delete();
+                }
             }
         });
     }

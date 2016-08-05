@@ -12,6 +12,8 @@ public abstract class SensorData {
     protected int minute;
     protected int second;
 
+    protected boolean processed;
+
     public SensorData(TimeAndDay time) {
         this.day = time.getDay();
         this.month = time.getMonth();
@@ -19,6 +21,17 @@ public abstract class SensorData {
         this.hour = time.getHour();
         this.minute = time.getMinute();
         this.second = time.getSecond();
+        this.processed = false;
+    }
+
+    public SensorData(TimeAndDay time, Boolean processed) {
+        this.day = time.getDay();
+        this.month = time.getMonth();
+        this.year = time.getYear();
+        this.hour = time.getHour();
+        this.minute = time.getMinute();
+        this.second = time.getSecond();
+        this.processed = processed;
     }
 
     public SensorData(int day, int month, int year, int hour, int minute, int second) {
@@ -28,6 +41,17 @@ public abstract class SensorData {
         this.hour = hour;
         this.minute = minute;
         this.second = second;
+        this.processed = false;
+    }
+
+    public SensorData(int day, int month, int year, int hour, int minute, int second, Boolean processed) {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.hour = hour;
+        this.minute = minute;
+        this.second = second;
+        this.processed = processed;
     }
 
     public TimeAndDay getTimeStamp() {
@@ -50,6 +74,14 @@ public abstract class SensorData {
         this.hour = hour;
         this.minute = minute;
         this.second = second;
+    }
+
+    public boolean isProcessed() {
+        return processed;
+    }
+
+    public void setProcessed(boolean processed) {
+        this.processed = processed;
     }
 
     public int getDay() {

@@ -17,6 +17,16 @@ public class CameraData extends SensorData{
         this.path = path;
     }
 
+    public CameraData( String path, TimeAndDay time, Boolean processed){
+        super(time,processed);
+        this.path = path;
+    }
+
+    public CameraData( String path, int day, int month, int year, int hour, int minute, int second, Boolean processed){
+        super(day, month, year, hour, minute, second,processed);
+        this.path = path;
+    }
+
     public int getId() {
         return id;
     }

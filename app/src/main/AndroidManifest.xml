@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-
     <uses-feature android:name="android.hardware.camera2" />
     <uses-feature android:name="android.hardware.Sensor" />
     <uses-feature android:name="android.hardware.sensor.accelerometer" />
@@ -51,14 +50,14 @@
             android:name=".CameraService"
             android:enabled="true"
             android:exported="false" />
-        <service android:name=".AccelerometerService"
+        <service
+            android:name=".AccelerometerService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
         <service
             android:name=".LocationService"
             android:enabled="true"
-            android:exported="false"/>
-
+            android:exported="false" />
 
         <receiver
             android:name=".AlarmReceiver"
@@ -81,6 +80,10 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".ImageProcessingService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

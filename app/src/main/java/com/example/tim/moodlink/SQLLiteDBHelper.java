@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +41,9 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
     private static final String COL_HOUR = "hour";
     private static final String COL_MINUTES = "minutes";
     private static final String COL_SECONDS = "seconds";
+
+    private static final String COL_PROCESSED = "processed";
+
 
     // Light Data Table only columns
     private static final String COL_LUX_VALUE = "lux_value";
@@ -82,7 +84,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
             COL_HOUR + " INTEGER NOT NULL, " +
             COL_MINUTES + " INTEGER NOT NULL, " +
             COL_SECONDS + " INTEGER NOT NULL," +
-            COL_LUX_VALUE + " REEL NOT NULL );";
+            COL_LUX_VALUE + " REEL NOT NULL, " +
+            COL_PROCESSED + " INTEGER );";
 
     private static final String CREATE_CAMERA_TABLE = "CREATE TABLE " + CAMERA_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -92,7 +95,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
             COL_HOUR + " INTEGER NOT NULL, " +
             COL_MINUTES + " INTEGER NOT NULL, " +
             COL_SECONDS + " INTEGER NOT NULL," +
-            COL_PIC_PATH + " TEXT NOT NULL );";
+            COL_PIC_PATH + " TEXT NOT NULL, " +
+            COL_PROCESSED + " INTEGER );";
 
     private static final String CREATE_PHONE_TABLE = "CREATE TABLE " + PHONE_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -102,7 +106,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
             COL_HOUR + " INTEGER NOT NULL, " +
             COL_MINUTES + " INTEGER NOT NULL, " +
             COL_SECONDS + " INTEGER NOT NULL," +
-            COL_REC_PATH + " TEXT NOT NULL );";
+            COL_REC_PATH + " TEXT NOT NULL, " +
+            COL_PROCESSED + " INTEGER );";
 
     private static final String CREATE_ACCELEROMETER_TABLE = "CREATE TABLE " + ACCELEROMETER_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -114,7 +119,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
             COL_SECONDS + " INTEGER NOT NULL," +
             COL_ACCELEROMETER_X + " REEL NOT NULL," +
             COL_ACCELEROMETER_Y + " REEL NOT NULL," +
-            COL_ACCELEROMETER_Z + " REEL NOT NULL);";
+            COL_ACCELEROMETER_Z + " REEL NOT NULL, " +
+            COL_PROCESSED + " INTEGER );";
 
     private static final String CREATE_LOCATION_TABLE = "CREATE TABLE " + LOCATION_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -125,7 +131,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
             COL_MINUTES + " INTEGER NOT NULL, " +
             COL_SECONDS + " INTEGER NOT NULL," +
             COL_LOCATION_LAT + " REEL NOT NULL," +
-            COL_LOCATION_LONG + " REEL NOT NULL);";
+            COL_LOCATION_LONG + " REEL NOT NULL, " +
+            COL_PROCESSED + " INTEGER );";
 
     public SQLLiteDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -140,12 +147,6 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_LOCATION_TABLE);
         db.execSQL(CREATE_CAMERA_TABLE);
         db.execSQL(CREATE_PHONE_TABLE);
-    }
-
-    public void closeDB() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        if (db != null && db.isOpen())
-            db.close();
     }
 
     @Override
@@ -163,13 +164,21 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
 
     // CRUD (Create, Read, Update and Delete) Operations
 
-    public ContentValues setContentValueTime(ContentValues values, SensorData data) {
+    public ContentValues setContentValueSensorData(ContentValues values, SensorData data) {
         values.put(COL_DAY, data.getDay());
         values.put(COL_MONTH, data.getMonth());
         values.put(COL_YEAR, data.getYear());
         values.put(COL_HOUR, data.getHour());
         values.put(COL_MINUTES, data.getMinute());
         values.put(COL_SECONDS, data.getSecond());
+
+
+        if (data.isProcessed()) {
+            values.put(COL_PROCESSED, 1);
+        } else {
+            values.put(COL_PROCESSED, 0);
+        }
+        
         return values;
     }
 
@@ -182,9 +191,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         values.put(COL_USERNAME, username.getUsername());
 
         // insert row
-        long username_id = db.insert(USERNAME_TABLE, null, values);
 
-        return username_id;
+        return db.insert(USERNAME_TABLE, null, values);
     }
 
     public UsernameData getUsernameData() {
@@ -231,9 +239,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         values.put(COL_EMAIL, contactData.getEmail());
 
         // insert row
-        long contact_id = db.insert(CONTACTS_TABLE, null, values);
 
-        return contact_id;
+        return db.insert(CONTACTS_TABLE, null, values);
     }
 
     public ContactData getContactData(long id) {
@@ -244,28 +251,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery(selectQuery, null);
 
-        if (c != null)
+        if (c != null) {
             c.moveToFirst();
-
-        ContactData contactData = new ContactData(
-                c.getString(c.getColumnIndex(COL_NAME)),
-                c.getString(c.getColumnIndex(COL_CATEGORY)),
-                c.getString(c.getColumnIndex(COL_PHONE)),
-                c.getString(c.getColumnIndex(COL_EMAIL)));
-        contactData.setId(c.getInt(c.getColumnIndex(COL_ID)));
-
-        return contactData;
-    }
-
-    public ContactData getContactDataByRowNumber(int row) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String selectQuery = "SELECT  * FROM " + CONTACTS_TABLE + " WHERE rowid = " + row + 1;
-
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        if (c != null && c.moveToFirst()) {
-
 
             ContactData contactData = new ContactData(
                     c.getString(c.getColumnIndex(COL_NAME)),
@@ -294,7 +281,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
                         c.getString(c.getColumnIndex(COL_EMAIL)));
                 contactData.setId(c.getInt(c.getColumnIndex(COL_ID)));
 
-                
+
                 contactDatas.add(contactData);
             } while (c.moveToNext());
         }
@@ -315,29 +302,11 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         return db.update(CONTACTS_TABLE, values, COL_ID + " = " + idToUpdate, null);
     }
 
-    public int updateContactDataByRowNumber(int row, ContactData contactData) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(COL_NAME, contactData.getName());
-        values.put(COL_CATEGORY, contactData.getCategory());
-        values.put(COL_PHONE, contactData.getPhone());
-        values.put(COL_EMAIL, contactData.getEmail());
-
-        // updating row
-        return db.update(CONTACTS_TABLE, values, "rowid = " + row + 1, null);
-    }
 
     public void deleteContact(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(CONTACTS_TABLE, COL_ID + " = ?",
                 new String[]{String.valueOf(id)});
-    }
-
-    public void deleteContactByRowNumber(int row) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(CONTACTS_TABLE, "rowid = ?",
-                new String[]{String.valueOf(row)});
     }
 
     // Light Data table
@@ -348,7 +317,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COL_LUX_VALUE, lightData.getLuxValue());
 
-        values = setContentValueTime(values, lightData);
+        values = setContentValueSensorData(values, lightData);
 
         // insert row
         long light_data_id = db.insert(LIGHT_TABLE, null, values);
@@ -400,12 +369,28 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
                         c.getInt(c.getColumnIndex(COL_SECONDS)));
                 lightData.setId(c.getInt(c.getColumnIndex(COL_ID)));
 
-                
+
                 lightDatas.add(lightData);
             } while (c.moveToNext());
         }
 
         return lightDatas;
+    }
+
+    public int updateLightData(long idToUpdate, LightData lightData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_LUX_VALUE, lightData.getLuxValue());
+
+        if (lightData.isProcessed()) {
+            values.put(COL_PROCESSED, 1);
+        } else {
+            values.put(COL_PROCESSED, 0);
+        }
+
+        // updating row
+        return db.update(LIGHT_TABLE, values, COL_ID + " = " + idToUpdate, null);
     }
 
     public void deleteLightData(long id) {
@@ -430,7 +415,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         values.put(COL_ACCELEROMETER_Z, accelerometerData.getzAxisValue());
 
 
-        values = setContentValueTime(values, accelerometerData);
+        values = setContentValueSensorData(values, accelerometerData);
 
         // insert row
         long accelerometer_data_id = db.insert(ACCELEROMETER_TABLE, null, values);
@@ -486,12 +471,31 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
                         c.getInt(c.getColumnIndex(COL_SECONDS)));
                 accelerometerData.setId(c.getInt(c.getColumnIndex(COL_ID)));
 
-                
+
                 accelerometerDatas.add(accelerometerData);
             } while (c.moveToNext());
         }
 
         return accelerometerDatas;
+    }
+
+    public int updateAccelerometerData(long idToUpdate, AccelerometerData accelerometerData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_ACCELEROMETER_X, accelerometerData.getxAxisValue());
+        values.put(COL_ACCELEROMETER_Y, accelerometerData.getyAxisValue());
+        values.put(COL_ACCELEROMETER_Z, accelerometerData.getzAxisValue());
+
+
+        if (accelerometerData.isProcessed()) {
+            values.put(COL_PROCESSED, 1);
+        } else {
+            values.put(COL_PROCESSED, 0);
+        }
+
+        // updating row
+        return db.update(ACCELEROMETER_TABLE, values, COL_ID + " = " + idToUpdate, null);
     }
 
     public void deleteAccelerometerData(long id) {
@@ -516,7 +520,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         values.put(COL_LOCATION_LONG, locationData.getLongitude());
 
 
-        values = setContentValueTime(values, locationData);
+        values = setContentValueSensorData(values, locationData);
 
         // insert row
         long location_data_id = db.insert(LOCATION_TABLE, null, values);
@@ -570,12 +574,30 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
                         c.getInt(c.getColumnIndex(COL_SECONDS)));
                 locationData.setId(c.getInt(c.getColumnIndex(COL_ID)));
 
-                
+
                 locationDatas.add(locationData);
             } while (c.moveToNext());
         }
 
         return locationDatas;
+    }
+
+    public int updateLocationData(long idToUpdate, LocationData locationData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_LOCATION_LAT, locationData.getLatitude());
+        values.put(COL_LOCATION_LONG, locationData.getLongitude());
+
+
+        if (locationData.isProcessed()) {
+            values.put(COL_PROCESSED, 1);
+        } else {
+            values.put(COL_PROCESSED, 0);
+        }
+
+        // updating row
+        return db.update(LOCATION_TABLE, values, COL_ID + " = " + idToUpdate, null);
     }
 
     public void deleteLocationData(long id) {
@@ -596,7 +618,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(COL_PIC_PATH, cameraData.getPath());
-        values = setContentValueTime(values, cameraData);
+        values = setContentValueSensorData(values, cameraData);
 
         // insert row
         long camera_data_id = db.insert(CAMERA_TABLE, null, values);
@@ -649,12 +671,28 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
                 cameraData.setId(c.getInt(c.getColumnIndex(COL_ID)));
 
 
-                
                 cameraDatas.add(cameraData);
             } while (c.moveToNext());
         }
 
         return cameraDatas;
+    }
+
+    public int updateCameraData(long idToUpdate, CameraData cameraData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_PIC_PATH, cameraData.getPath());
+
+
+        if (cameraData.isProcessed()) {
+            values.put(COL_PROCESSED, 1);
+        } else {
+            values.put(COL_PROCESSED, 0);
+        }
+
+        // updating row
+        return db.update(CAMERA_TABLE, values, COL_ID + " = " + idToUpdate, null);
     }
 
     public void deleteCameraData(long id) {
@@ -675,7 +713,7 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(COL_REC_PATH, phoneData.getPath());
-        values = setContentValueTime(values, phoneData);
+        values = setContentValueSensorData(values, phoneData);
 
         // insert row
         long phone_data_id = db.insert(PHONE_TABLE, null, values);
@@ -728,12 +766,28 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
                 phoneData.setId(c.getInt(c.getColumnIndex(COL_ID)));
 
 
-                
                 phoneDatas.add(phoneData);
             } while (c.moveToNext());
         }
 
         return phoneDatas;
+    }
+
+    public int updatePhoneData(long idToUpdate, PhoneData phoneData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_REC_PATH, phoneData.getPath());
+
+
+        if (phoneData.isProcessed()) {
+            values.put(COL_PROCESSED, 1);
+        } else {
+            values.put(COL_PROCESSED, 0);
+        }
+
+        // updating row
+        return db.update(PHONE_TABLE, values, COL_ID + " = " + idToUpdate, null);
     }
 
     public void deletePhoneData(long id) {

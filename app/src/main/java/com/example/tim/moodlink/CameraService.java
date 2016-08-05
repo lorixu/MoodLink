@@ -7,7 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -22,12 +25,21 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Surface;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.FaceDetector;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -178,42 +190,32 @@ public class CameraService extends Service {
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 
-            File file = new File(getString(R.string.camera_storage));
-
-            //noinspection ResultOfMethodCallIgnored
-            file.mkdirs();
-
-            Calendar c = Calendar.getInstance();
-            String month = Integer.toString(c.get(Calendar.MONTH));
-            if (month.length() == 1) month = "0" + month;
-            String day = Integer.toString(c.get(Calendar.DAY_OF_MONTH));
-            if (day.length() == 1) day = "0" + day;
-            String year = Integer.toString(c.get(Calendar.YEAR));
-            String hour = Integer.toString(c.get(Calendar.HOUR_OF_DAY));
-            if (hour.length() == 1) hour = "0" + hour;
-            String minute = Integer.toString(c.get(Calendar.MINUTE));
-            if (minute.length() == 1) minute = "0" + minute;
-
-            String fileName = month + day + year + "_" + hour + minute;
-
-            file = new File(getString(R.string.camera_storage), fileName + ".jpg");
-
-            CameraData cameraDataItem = new CameraData(
-                    getString(R.string.camera_storage)+"/"+fileName+".jpg",
+            File file = createFile();
+            CameraData cameraDataItem = new CameraData(file.getAbsolutePath(),
                     new TimeAndDay(Calendar.getInstance())
             );
             db.addCameraTuple(cameraDataItem);
 
             try {
 
-
                 ByteBuffer imageBuffer = image.getPlanes()[0].getBuffer();
-
-                FileOutputStream output = new FileOutputStream(file);
                 byte[] imageBytes = new byte[imageBuffer.capacity()];
                 imageBuffer.get(imageBytes);
 
-                output.write(imageBytes);
+
+
+                Bitmap storedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
+                Matrix mat = new Matrix();
+                mat.postRotate(-90);
+                storedBitmap = Bitmap.createBitmap(storedBitmap, 0, 0, storedBitmap.getWidth(), storedBitmap.getHeight(), mat, true);
+
+
+
+                FileOutputStream output = new FileOutputStream(file);
+
+                storedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+                //output.write(storedBitmap.getRowBytes());
 
                 Toast.makeText(CameraService.this, "Pictures Saved", Toast.LENGTH_SHORT).show();
                 Log.i(TAG, "Picture saved! ");
@@ -222,6 +224,28 @@ public class CameraService extends Service {
                 e.printStackTrace();
             }
         }
+    }
+
+    private File createFile() {
+        File file = new File(getString(R.string.camera_storage));
+
+        //noinspection ResultOfMethodCallIgnored
+        file.mkdirs();
+
+        Calendar c = Calendar.getInstance();
+        String month = Integer.toString(c.get(Calendar.MONTH));
+        if (month.length() == 1) month = "0" + month;
+        String day = Integer.toString(c.get(Calendar.DAY_OF_MONTH));
+        if (day.length() == 1) day = "0" + day;
+        String year = Integer.toString(c.get(Calendar.YEAR));
+        String hour = Integer.toString(c.get(Calendar.HOUR_OF_DAY));
+        if (hour.length() == 1) hour = "0" + hour;
+        String minute = Integer.toString(c.get(Calendar.MINUTE));
+        if (minute.length() == 1) minute = "0" + minute;
+
+        String fileName = month + day + year + "_" + hour + minute;
+
+        return new File(getString(R.string.camera_storage), fileName + ".jpg");
     }
 
     protected CaptureRequest createCaptureRequest() {

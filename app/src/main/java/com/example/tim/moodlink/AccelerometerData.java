@@ -1,6 +1,5 @@
 package com.example.tim.moodlink;
 
-
 public class AccelerometerData extends SensorData {
 
     private int id;

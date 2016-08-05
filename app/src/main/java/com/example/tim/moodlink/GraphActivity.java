@@ -22,6 +22,9 @@ public class GraphActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        Intent imageProcessingIntent = new Intent(this, ImageProcessingService.class);
+        this.startService(imageProcessingIntent);
     }
 
 
