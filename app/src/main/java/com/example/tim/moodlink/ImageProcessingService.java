@@ -30,9 +30,7 @@ public class ImageProcessingService extends Service {
 
     public static String TAG = "IMAGE PROC SERVICE";
 
-    public static final int _ANGER = 1;
-    public static final int _DISGUST = 2;
-    public static final int _HAPPINESS = 3;
+
     public static final int _NEUTRALITY = 4;
     public static final int _SADNESS = 5;
     public static final int _SURPRISE = 6;
