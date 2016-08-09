@@ -61,14 +61,14 @@ public class SettingsActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
 
-        Pair<?, ?>[] prefsId =new Pair<?, ?>[]{
+        Pair<?, ?>[] prefsId = new Pair<?, ?>[]{
                 new Pair<>(getString(R.string.PREF_CAMERA_SERVICE_STARTED), cameraCheckBox),
                 new Pair<>(getString(R.string.PREF_LIGHT_SERVICE_STARTED), lightCheckBox),
                 new Pair<>(getString(R.string.PREF_PHONE_RECEIVER_ACTIVATED), phoneCheckBox),
                 new Pair<>(getString(R.string.PREF_LOCATION_SERVICE_ACTIVATED), locationCheckBox),
                 new Pair<>(getString(R.string.PREF_ACCELEROMETER_SERVICE_STARTED), accelerometerCheckBox)};
 
-        for (Pair<?,?> pair : prefsId) {
+        for (Pair<?, ?> pair : prefsId) {
             String strId = (String) pair.first;
             CheckBox chkbx = (CheckBox) pair.second;
             if (prefs.getBoolean(strId, false)) {
@@ -226,27 +226,29 @@ public class SettingsActivity extends AppCompatActivity {
 
 
                 Button dataButton = (Button) findViewById(R.id.buttonPrintValues);
+                Button processButton = (Button) findViewById(R.id.buttonProcessValues);
                 Button deleteButton = (Button) findViewById(R.id.buttonDeleteValues);
                 dataButton.setOnClickListener(null);
+                processButton.setOnClickListener(null);
                 deleteButton.setOnClickListener(null);
 
                 TextView itemSelected = (TextView) view;
-                Log.d(TAG, "onItemSelected: "+itemSelected.getText().toString());
+                Log.d(TAG, "onItemSelected: " + itemSelected.getText().toString());
                 switch (itemSelected.getText().toString()) {
                     case "Luminosity":
-                        setButtonOnLuminosity(dataButton, deleteButton);
+                        setButtonOnLuminosity(dataButton, processButton, deleteButton);
                         break;
                     case "Accelerometer":
-                        setButtonOnAccelerometer(dataButton, deleteButton);
+                        setButtonOnAccelerometer(dataButton, processButton, deleteButton);
                         break;
                     case "Location":
-                        setButtonOnLocation(dataButton, deleteButton);
+                        setButtonOnLocation(dataButton, processButton, deleteButton);
                         break;
                     case "Phone":
-                        setButtonOnPhone(dataButton, deleteButton);
+                        setButtonOnPhone(dataButton, processButton, deleteButton);
                         break;
                     case "Camera":
-                        setButtonOnCamera(dataButton, deleteButton);
+                        setButtonOnCamera(dataButton, processButton, deleteButton);
                         break;
                 }
             }
@@ -264,12 +266,20 @@ public class SettingsActivity extends AppCompatActivity {
         db.close();
     }
 
-    private void setButtonOnLuminosity(Button dataButton, Button deleteButton) {
+    private void setButtonOnLuminosity(Button dataButton, Button processButton, Button deleteButton) {
         dataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<LightData> list = (ArrayList) db.getAllLightDatas();
+                ArrayList list = (ArrayList) db.getAllLightDatas();
                 Log.d(TAG, "onClick: " + list.toString());
+            }
+        });
+
+        processButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent lightProcessingIntent = new Intent(SettingsActivity.this, LightProcessingService.class);
+                SettingsActivity.this.startService(lightProcessingIntent);
             }
         });
 
@@ -281,12 +291,20 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void setButtonOnAccelerometer(Button dataButton,Button deleteButton) {
-         dataButton.setOnClickListener(new View.OnClickListener() {
+    private void setButtonOnAccelerometer(Button dataButton, Button processButton, Button deleteButton) {
+        dataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<AccelerometerData> list = (ArrayList) db.getAllAccelerometerDatas();
+                ArrayList list = (ArrayList) db.getAllAccelerometerDatas();
                 Log.d(TAG, "onClick: " + list.toString());
+            }
+        });
+
+        processButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent accelerometerProcessingIntent = new Intent(SettingsActivity.this, AccelerometerProcessingService.class);
+                //SettingsActivity.this.startService(accelerometerProcessingIntent);
             }
         });
 
@@ -298,12 +316,20 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void setButtonOnLocation(Button dataButton,Button deleteButton) {
+    private void setButtonOnLocation(Button dataButton, Button processButton, Button deleteButton) {
         dataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<LocationData> list = (ArrayList) db.getAllLocationDatas();
+                ArrayList list = (ArrayList) db.getAllLocationDatas();
                 Log.d(TAG, "onClick: " + list.toString());
+            }
+        });
+
+        processButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent locationProcessingIntent = new Intent(SettingsActivity.this, LocationProcessingService.class);
+                //SettingsActivity.this.startService(locationProcessingIntent);
             }
         });
 
@@ -315,12 +341,20 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void setButtonOnPhone(Button dataButton,Button deleteButton) {
+    private void setButtonOnPhone(Button dataButton, Button processButton, Button deleteButton) {
         dataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<PhoneData> list = (ArrayList) db.getAllPhoneDatas();
+                ArrayList list = (ArrayList) db.getAllPhoneDatas();
                 Log.d(TAG, "onClick: " + list.toString());
+            }
+        });
+
+        processButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent phoneProcessingIntent = new Intent(SettingsActivity.this, PhoneProcessingService.class);
+                //SettingsActivity.this.startService(phoneProcessingIntent);
             }
         });
 
@@ -332,12 +366,21 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void setButtonOnCamera(Button dataButton,Button deleteButton) {
+    private void setButtonOnCamera(Button dataButton, Button processButton, Button deleteButton) {
         dataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<CameraData> list = (ArrayList) db.getAllCameraDatas();
+                ArrayList list = (ArrayList) db.getAllCameraDatas();
                 Log.d(TAG, "onClick: " + list.toString());
+            }
+        });
+
+        processButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: ");
+                Intent imageProcessingIntent = new Intent(SettingsActivity.this, ImageProcessingService.class);
+                SettingsActivity.this.startService(imageProcessingIntent);
             }
         });
 
@@ -346,8 +389,10 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 db.deleteAllCameraData();
                 File dir = new File(getString(R.string.camera_storage));
-                for(File file : dir.listFiles()){
-                    file.delete();
+                for (File file : dir.listFiles()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    if (!file.isDirectory())
+                        file.delete();
                 }
             }
         });

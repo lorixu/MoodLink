@@ -18,33 +18,21 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.TotalCaptureResult;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.Surface;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.vision.face.FaceDetector;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 
 /*
 Reference: http://stackoverflow.com/questions/28003186/capture-picture-without-preview-using-camera2-api

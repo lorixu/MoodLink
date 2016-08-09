@@ -83,6 +83,12 @@
         <service
             android:name=".ImageProcessingService"
             android:enabled="true"
+            android:exported="true"
+            android:allowClearUserData="true"
+            android:hardwareAccelerated="false"/>
+        <service
+            android:name=".LightProcessingService"
+            android:enabled="true"
             android:exported="true"></service>
     </application>
 

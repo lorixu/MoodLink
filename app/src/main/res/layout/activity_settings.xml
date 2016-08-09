@@ -204,31 +204,46 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:layout_weight="1"
                 android:spinnerMode="dropdown" />
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+        </LinearLayout>
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Log Print Values"
-                    android:id="@+id/buttonPrintValues"
-                    android:gravity="center"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Delete Values"
-                    android:id="@+id/buttonDeleteValues" />
+            <Button
+                android:layout_width="119dp"
+                android:layout_height="wrap_content"
+                android:text="Log Print Values"
+                android:id="@+id/buttonPrintValues"
+                android:gravity="center"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp" />
 
-            </LinearLayout>
+            <Button
+                android:layout_width="121dp"
+                android:layout_height="wrap_content"
+                android:text="Process Values"
+                android:id="@+id/buttonProcessValues"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp" />
+
+            <Button
+                android:layout_width="98dp"
+                android:layout_height="wrap_content"
+                android:text="Delete Values"
+                android:id="@+id/buttonDeleteValues"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp" />
 
         </LinearLayout>
 

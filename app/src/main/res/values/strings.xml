@@ -22,11 +22,11 @@
     <string name="first_launch_title">Welcome in\nMoodlink</string>
     <string name="first_setup_info">Please fill up those few information for us to know you better.</string>
     <string name="username_text">Your Name</string>
-    <string name="username_hint">Please enter your name here ...</string>
+    <string name="username_hint">Please enter your name here …</string>
     <string name="first_contact_text">Please enter your practitioner\'s information.</string>
-    <string name="first_pract_name_hint">Please enter his/her name ...</string>
-    <string name="first_pract_phone_hint">Please enter his/her phone number ...</string>
-    <string name="first_pract_email_hint">Please enter his/her email address ...</string>
+    <string name="first_pract_name_hint">Please enter his/her name …</string>
+    <string name="first_pract_phone_hint">Please enter his/her phone number …</string>
+    <string name="first_pract_email_hint">Please enter his/her email address …</string>
     <string name="validate_button_text">Save</string>
 
 
@@ -48,17 +48,17 @@
     <string name="new_contact_title">New\nContact</string>
 
     <string name="cat_text">Category</string>
-    <string name="cat_hint">Select one ...</string>
+    <string name="cat_hint">Select one …</string>
 
     <string name="name_text">Name</string>
-    <string name="name_hint">Enter a name ...</string>
+    <string name="name_hint">Enter a name …</string>
 
     <string name="phone_text">Phone Number</string>
-    <string name="phone_hint">Enter a phone number ...</string>
+    <string name="phone_hint">Enter a phone number …</string>
 
-    <string name="email_text">Email Adress</string>
+    <string name="email_text">Email Address</string>
 
-    <string name="email_hint">Enter a email adress ...</string>
+    <string name="email_hint">Enter a email address …</string>
     <string-array name="cat_items_new_contact">
         <item>Practitioner</item>
         <item>Family</item>
@@ -80,6 +80,54 @@
         <item>Location</item>
         <item>Phone</item>
         <item>Camera</item>
+    </string-array>
+
+    <!--Image Processing-->
+
+    <string-array name="anger_pictures">
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/anger/anger_01.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/anger/anger_02.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/anger/anger_03.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/anger/anger_04.jpg</item>
+    </string-array>
+
+    <string-array name="disgust_pictures">
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/disgust/disgust_01.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/disgust/disgust_02.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/disgust/disgust_03.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/disgust/disgust_04.jpg</item>
+    </string-array>
+
+    <string-array name="happiness_pictures">
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/happiness/happiness_01.jpg</item>
+        <!--<item>/storage/emulated/0/Moodlink/Pictures/Training/happiness/happiness_02.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/happiness/happiness_03.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/happiness/happiness_04.jpg</item>-->
+
+    </string-array>
+
+    <string-array name="neutrality_pictures">
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/neutrality/neutrality_01.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/neutrality/neutrality_02.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/neutrality/neutrality_03.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/neutrality/neutrality_04.jpg</item>
+
+    </string-array>
+
+    <string-array name="sadness_pictures">
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/sadness/sadness_01.jpg</item>
+        <!--<item>/storage/emulated/0/Moodlink/Pictures/Training/sadness/sadness_02.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/sadness/sadness_03.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/sadness/sadness_04.jpg</item>-->
+
+    </string-array>
+
+    <string-array name="surprise_pictures">
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/surprise/surprise_01.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/surprise/surprise_02.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/surprise/surprise_03.jpg</item>
+        <item>/storage/emulated/0/Moodlink/Pictures/Training/surprise/surprise_04.jpg</item>
+
     </string-array>
 
 </resources>

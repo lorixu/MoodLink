@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="PREF_PREVIOUSLY_STARTED">PREF_PREVIOUSLY_STARTED</string>
+    <string name="PREF_RECOGNIZER_TRAINED">PREF_RECOGNIZER_TRAINED</string>
     <string name="PREF_LIGHT_SERVICE_STARTED">PREF_LIGHT_SERVICE_STARTED</string>
     <string name="PREF_CAMERA_SERVICE_STARTED">PREF_CAMERA_SERVICE_STARTED</string>
     <string name="PREF_PHONE_RECEIVER_ACTIVATED">PREF_PHONE_RECEIVER_ACTIVATED</string>

@@ -81,10 +81,8 @@ public class LightService extends Service {
 
         public int average(ArrayList<Float> list)
         {
-            double average = 0.0;
-            for (int i = 0; i < list.size(); i++)  {
-                average += list.get(i) ;
-            }
+            float average = 0;
+            for (float val : list)  average += val;
             return (int) average/list.size();
         }
 
@@ -98,6 +96,7 @@ public class LightService extends Service {
 
         @Override
         public void onSensorChanged(SensorEvent event) {
+            Log.d(TAG, "onSensorChanged: "+event.values[0]);
             luxValues.add(event.values[0]);
         }
 
