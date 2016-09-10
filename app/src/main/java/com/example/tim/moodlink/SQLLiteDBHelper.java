@@ -5,16 +5,22 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SQLLiteDBHelper extends SQLiteOpenHelper {
 
+    public static String TAG = "SQLLiteDBHelper";
+
     private static final String DATABASE_NAME = "Moodlink_DB";
     private static final int DATABASE_VERSION = 1;
 
-    private static final String USERNAME_TABLE = "username_table";
+    private static final String USER_TABLE = "user_table";
+    private static final String MOOD_TABLE = "mood_table";
     private static final String CONTACTS_TABLE = "contacts_table";
     private static final String LIGHT_TABLE = "light_data_table";
     private static final String CAMERA_TABLE = "camera_data_table";
@@ -25,8 +31,15 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
     // Common columns
     private static final String COL_ID = "id";
 
-    // Username Table only columns
+    // User Table only columns
     private static final String COL_USERNAME = "username";
+    private static final String COL_HOME = "home";
+    private static final String COL_WORK = "work";
+
+    // Mood Table only columns
+
+    private static final String COL_MOOD = "mood";
+    private static final String COL_FINAL_VALUE = "final_value";
 
     // Contacts Table only columns
     private static final String COL_NAME = "name";
@@ -65,9 +78,19 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
 
 
     // Tables' CREATE statements
-    private static final String CREATE_USERNAME_TABLE = "CREATE TABLE " + USERNAME_TABLE + " (" +
+    private static final String CREATE_USER_TABLE = "CREATE TABLE " + USER_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COL_USERNAME + " TEXT NOT NULL );";
+            COL_USERNAME + " TEXT NOT NULL, " +
+            COL_HOME + " TEXT NOT NULL, " +
+            COL_WORK + " TEXT );";
+
+    private static final String CREATE_MOOD_TABLE = "CREATE TABLE " + MOOD_TABLE + " (" +
+            COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COL_DAY + " INTEGER NOT NULL, " +
+            COL_MONTH + " INTEGER NOT NULL," +
+            COL_YEAR + " INTEGER NOT NULL, " +
+            COL_MOOD + " INTEGER, " +
+            COL_FINAL_VALUE + " INTEGER );";
 
     private static final String CREATE_CONTACTS_TABLE = "CREATE TABLE " + CONTACTS_TABLE + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -130,8 +153,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
             COL_HOUR + " INTEGER NOT NULL, " +
             COL_MINUTES + " INTEGER NOT NULL, " +
             COL_SECONDS + " INTEGER NOT NULL," +
-            COL_LOCATION_LAT + " REEL NOT NULL," +
-            COL_LOCATION_LONG + " REEL NOT NULL, " +
+            COL_LOCATION_LAT + " REEL," +
+            COL_LOCATION_LONG + " REEL, " +
             COL_PROCESSED + " INTEGER );";
 
     public SQLLiteDBHelper(Context context) {
@@ -140,7 +163,9 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_USERNAME_TABLE);
+        db.execSQL(CREATE_USER_TABLE);
+        db.execSQL(CREATE_MOOD_TABLE);
+        Log.d(TAG, "onCreate: Mood Table created");
         db.execSQL(CREATE_CONTACTS_TABLE);
         db.execSQL(CREATE_LIGHT_TABLE);
         db.execSQL(CREATE_ACCELEROMETER_TABLE);
@@ -151,7 +176,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE " + USERNAME_TABLE + ";");
+        db.execSQL("DROP TABLE " + USER_TABLE + ";");
+        db.execSQL("DROP TABLE " + MOOD_TABLE + ";");
         db.execSQL("DROP TABLE " + CONTACTS_TABLE + ";");
         db.execSQL("DROP TABLE " + LIGHT_TABLE + ";");
         db.execSQL("DROP TABLE " + ACCELEROMETER_TABLE + ";");
@@ -182,49 +208,199 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         return values;
     }
 
-    // Username table
+    // User table
 
-    public long addUsernameTuple(UsernameData username) {
+    public long addUserTuple(UserData user) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(COL_USERNAME, username.getUsername());
+        values.put(COL_USERNAME, user.getUsername());
+        values.put(COL_HOME, Double.toString(user.getHome().latitude)+"/"+Double.toString(user.getHome().longitude));
+        if (user.getWork() != null) values.put(COL_WORK, Double.toString(user.getWork().latitude)+"/"+Double.toString(user.getWork().longitude));
+
 
         // insert row
 
-        return db.insert(USERNAME_TABLE, null, values);
+        return db.insert(USER_TABLE, null, values);
     }
 
-    public UsernameData getUsernameData() {
+    public UserData getUserData() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT  * FROM " + USERNAME_TABLE + " WHERE "
+        String selectQuery = "SELECT  * FROM " + USER_TABLE + " WHERE "
                 + COL_ID + " = 1";
 
         Cursor c = db.rawQuery(selectQuery, null);
 
         if (c != null && c.moveToFirst()) {
-
-            UsernameData username = new UsernameData(c.getString(c.getColumnIndex(COL_USERNAME)));
-            username.setId(c.getInt(c.getColumnIndex(COL_ID)));
+            UserData user = null;
+            if (c.getString(c.getColumnIndex(COL_WORK)) == null) {
+                user = new UserData(c.getString(c.getColumnIndex(COL_USERNAME)), strToLatLng(c.getString(c.getColumnIndex(COL_HOME))));
+            } else {
+                user = new UserData(c.getString(c.getColumnIndex(COL_USERNAME)), strToLatLng(c.getString(c.getColumnIndex(COL_HOME))), strToLatLng(c.getString(c.getColumnIndex(COL_WORK))));
+            }
+            user.setId(c.getInt(c.getColumnIndex(COL_ID)));
             c.close();
-            return username;
-        } else return new UsernameData("");
+            return user;
+        } else return new UserData("",null);
     }
 
-    public int updateUsername(UsernameData usernameData) {
+    LatLng strToLatLng(String loc){
+
+        String[] latlng = loc.split("[/]");
+        LatLng res = new LatLng(Double.parseDouble(latlng[0]),Double.parseDouble(latlng[1]));
+        return res;
+    }
+
+    public int updateUser(UserData user) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(COL_USERNAME, usernameData.getUsername());
+        values.put(COL_USERNAME, user.getUsername());
+        values.put(COL_HOME, Double.toString(user.getHome().latitude)+"/"+Double.toString(user.getHome().longitude));
+        if (user.getWork() != null) values.put(COL_WORK, Double.toString(user.getWork().latitude)+"/"+Double.toString(user.getWork().longitude));
+        else values.put(COL_WORK, "");
 
         // updating row
-        return db.update(USERNAME_TABLE, values, COL_ID + " = 1", null);
+        return db.update(USER_TABLE, values, COL_ID + " = 1", null);
     }
 
-    public void deleteUsername() {
+    public void deleteUser() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(USERNAME_TABLE, COL_ID + " = 1", null);
+        db.delete(USER_TABLE, COL_ID + " = 1", null);
+    }
+
+    // Mood Data table
+
+    public long addMoodTuple(MoodData moodData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_MOOD, moodData.getMoodValue());
+        if (moodData.isFinalValue())
+            values.put(COL_FINAL_VALUE,1);
+        else
+            values.put(COL_FINAL_VALUE,0);
+        values.put(COL_YEAR,moodData.getYear());
+        values.put(COL_MONTH,moodData.getMonth());
+        values.put(COL_DAY,moodData.getDay());
+
+        // insert row
+        long mood_data_id = db.insert(MOOD_TABLE, null, values);
+
+        return mood_data_id;
+    }
+
+    public MoodData getMoodData(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + MOOD_TABLE + " WHERE "
+                + COL_ID + " = " + id;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+
+        MoodData moodData = new MoodData(c.getInt(
+                c.getColumnIndex(COL_MOOD)),
+                c.getInt(c.getColumnIndex(COL_DAY)),
+                c.getInt(c.getColumnIndex(COL_MONTH)),
+                c.getInt(c.getColumnIndex(COL_YEAR)));
+        moodData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+        if (c.getInt(c.getColumnIndex(COL_FINAL_VALUE)) == 1)
+            moodData.setFinalValue(true);
+        else
+            moodData.setFinalValue(false);
+
+        return moodData;
+    }
+
+    public MoodData getMoodDataByDay(TimeAndDay day){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + MOOD_TABLE + " WHERE "
+                + COL_DAY + " = " + day.getDay() + " AND "
+                + COL_MONTH + " = " + day.getMonth() + " AND "
+                + COL_YEAR + " = " + day.getYear();
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.moveToFirst()) {
+
+
+            MoodData moodData = new MoodData(c.getInt(
+                    c.getColumnIndex(COL_MOOD)),
+                    c.getInt(c.getColumnIndex(COL_DAY)),
+                    c.getInt(c.getColumnIndex(COL_MONTH)),
+                    c.getInt(c.getColumnIndex(COL_YEAR)));
+            moodData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+            if (c.getInt(c.getColumnIndex(COL_FINAL_VALUE)) == 1)
+                moodData.setFinalValue(true);
+            else
+                moodData.setFinalValue(false);
+
+            return moodData;
+        }else return null;
+    }
+
+    public List<MoodData> getAllMoodDatas() {
+        List<MoodData> moodDatas = new ArrayList<MoodData>();
+        String selectQuery = "SELECT  * FROM " + MOOD_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                MoodData moodData = new MoodData(c.getInt(
+                        c.getColumnIndex(COL_MOOD)),
+                        c.getInt(c.getColumnIndex(COL_DAY)),
+                        c.getInt(c.getColumnIndex(COL_MONTH)),
+                        c.getInt(c.getColumnIndex(COL_YEAR)));
+                moodData.setId(c.getInt(c.getColumnIndex(COL_ID)));
+
+                if (c.getInt(c.getColumnIndex(COL_FINAL_VALUE)) == 1)
+                    moodData.setFinalValue(true);
+                else
+                    moodData.setFinalValue(false);
+
+
+                moodDatas.add(moodData);
+            } while (c.moveToNext());
+        }
+
+        return moodDatas;
+    }
+
+    public int updateMoodData(long idToUpdate, MoodData moodData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_MOOD, moodData.getMoodValue());
+
+        if (moodData.isFinalValue()) {
+            values.put(COL_FINAL_VALUE, 1);
+        } else {
+            values.put(COL_FINAL_VALUE, 0);
+        }
+
+        // updating row
+        return db.update(MOOD_TABLE, values, COL_ID + " = " + idToUpdate, null);
+    }
+
+    public void deleteMoodData(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(MOOD_TABLE, COL_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    public void deleteAllMoodData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(MOOD_TABLE, null, null);
     }
 
     //Contacts table
@@ -540,8 +716,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
             c.moveToFirst();
 
         LocationData locationData = new LocationData(
-                c.getInt(c.getColumnIndex(COL_LOCATION_LAT)),
-                c.getInt(c.getColumnIndex(COL_LOCATION_LONG)),
+                c.getDouble(c.getColumnIndex(COL_LOCATION_LAT)),
+                c.getDouble(c.getColumnIndex(COL_LOCATION_LONG)),
                 c.getInt(c.getColumnIndex(COL_DAY)),
                 c.getInt(c.getColumnIndex(COL_MONTH)),
                 c.getInt(c.getColumnIndex(COL_YEAR)),
@@ -564,8 +740,8 @@ public class SQLLiteDBHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 LocationData locationData = new LocationData(
-                        c.getInt(c.getColumnIndex(COL_LOCATION_LAT)),
-                        c.getInt(c.getColumnIndex(COL_LOCATION_LONG)),
+                        c.getDouble(c.getColumnIndex(COL_LOCATION_LAT)),
+                        c.getDouble(c.getColumnIndex(COL_LOCATION_LONG)),
                         c.getInt(c.getColumnIndex(COL_DAY)),
                         c.getInt(c.getColumnIndex(COL_MONTH)),
                         c.getInt(c.getColumnIndex(COL_YEAR)),

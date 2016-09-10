@@ -96,7 +96,9 @@
                 android:layout_marginTop="10dp"
                 android:background="#d0bcf4"
                 android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -123,6 +125,20 @@
                     android:layout_alignParentTop="true"
                     android:layout_marginBottom="5dp"
                     android:layout_marginTop="5dp" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/homeEditText"
+                    android:hint="Your home address ..." />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/workEditText"
+                    android:hint="Your work address ... (optional)"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -160,9 +176,7 @@
                     android:phoneNumber="true"
                     android:digits="0123456789 +()-"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginTop="5dp" />
+                    android:layout_alignParentTop="true" />
 
                 <EditText
                     android:layout_width="match_parent"

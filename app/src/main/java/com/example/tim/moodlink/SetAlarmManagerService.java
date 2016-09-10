@@ -60,10 +60,17 @@ public class SetAlarmManagerService extends Service {
                     PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent broadcastAccelerometerIntent = new Intent(this, AlarmReceiver.class);
-            broadcastLocationIntent.putExtra(SERVICE_ID, AlarmReceiver.ACCELEROMETER_SERVICE);
+            broadcastAccelerometerIntent.putExtra(SERVICE_ID, AlarmReceiver.ACCELEROMETER_SERVICE);
             PendingIntent alarmAccelerometerIntent = PendingIntent.getBroadcast(SetAlarmManagerService.this,
                     AlarmReceiver.ACCELEROMETER_SERVICE,
-                    broadcastLocationIntent,
+                    broadcastAccelerometerIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            Intent broadcastMoodProcessingIntent = new Intent(this, AlarmReceiver.class);
+            broadcastMoodProcessingIntent.putExtra(SERVICE_ID, AlarmReceiver.MOOD_PROCESSING_INTENT);
+            PendingIntent alarmMoodProcessingIntent = PendingIntent.getBroadcast(SetAlarmManagerService.this,
+                    AlarmReceiver.MOOD_PROCESSING_INTENT,
+                    broadcastMoodProcessingIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SetAlarmManagerService.this);
@@ -95,6 +102,7 @@ public class SetAlarmManagerService extends Service {
                             setAlarmRepeating(alarmAccelerometerIntent);
                             edit.putBoolean(getString(R.string.PREF_ACCELEROMETER_SERVICE_STARTED), Boolean.TRUE);
 
+                            setAlarmRepeating(alarmMoodProcessingIntent);
                             break;
 
                         case AlarmReceiver.LIGHT_SERVICE:
@@ -119,6 +127,9 @@ public class SetAlarmManagerService extends Service {
                             setAlarmRepeating(alarmAccelerometerIntent);
                             edit.putBoolean(getString(R.string.PREF_ACCELEROMETER_SERVICE_STARTED), Boolean.TRUE);
 
+                            break;
+                        case AlarmReceiver.MOOD_PROCESSING_INTENT:
+                            setAlarmRepeating(alarmMoodProcessingIntent);
                             break;
                     }
                     break;

@@ -2,12 +2,12 @@ package com.example.tim.moodlink;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
 
 public class LightProcessingService extends Service {
 
@@ -17,45 +17,46 @@ public class LightProcessingService extends Service {
     private static final int LIGHTING_DIM = 1;
     private static final int LIGHTING_BRIGHT = 2;
 
+    private final IBinder binder = new LocalBinder();
+
     private SQLLiteDBHelper db;
-    final int[] values = new int[3];
+
+    public class LocalBinder extends Binder {
+        LightProcessingService getService() {
+            return LightProcessingService.this;
+        }
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return binder;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate: ");
-
-        //final CountDownLatch latch = new CountDownLatch(1);
-
-
-        Thread t = new Thread("LightProcessingService") {
-            @Override
-            public void run() {
-                db = new SQLLiteDBHelper(getApplicationContext());
-                processLightData();
-                db.close();
-                stopSelf();
-            }
-        };
-        t.start();
-        try {
-            t.join();
-            Toast.makeText(LightProcessingService.this, "Dark = " + values[0] + "% Dim = " + values[1] + "% Bright = " + values[2] + "%", Toast.LENGTH_SHORT).show();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        this.stopSelf();
-
     }
 
-    public void processLightData() {
+    public int getMoodValue(){
+        db = new SQLLiteDBHelper(getApplicationContext());
+        int[] values = processLightData();
+
+        int res;
+
+        if (values[0] != -1 && values[1] != -1 && values[2] != -1){
+            res = ((0*values[0]) + (5*values[1]) + (10*values[2])) / 100;
+        }else{
+            res = -1;
+        }
+
+        return res;
+    }
+
+    private int[] processLightData() {
         ArrayList<LightData> lightDatas = (ArrayList<LightData>) db.getAllLightDatas();
+
+        final int[] values = new int[3];
 
         int dark_inSecond = 0;
         int dim_inSecond = 0;
@@ -96,11 +97,20 @@ public class LightProcessingService extends Service {
         }
 
         int totalTime = dark_inSecond + dim_inSecond + bright_inSecond;
+
+
         if (totalTime != 0) {
             values[0] = (dark_inSecond * 100) / totalTime;
             values[1] = (dim_inSecond * 100) / totalTime;
             values[2] = (bright_inSecond * 100) / totalTime;
+        }else{
+
+            values[0] = -1;
+            values[1] = -1;
+            values[2] = -1;
         }
+
+        return values;
     }
 
     private int lightLevel(LightData data) {
@@ -113,6 +123,9 @@ public class LightProcessingService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (db != null) {
+            db.close();
+        }
         Log.d(TAG, "onDestroy: ");
     }
 }

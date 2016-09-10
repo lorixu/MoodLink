@@ -16,7 +16,7 @@ public class LocationData extends SensorData {
         this.longitude = longitude;
     }
 
-    public LocationData(double longitude,int day, int month, int year, int hour, int minute, int second, double latitude){
+    public LocationData(double latitude, double longitude,int day, int month, int year, int hour, int minute, int second){
         super(day, month, year, hour, minute, second);
         this.latitude = latitude;
         this.longitude = longitude;

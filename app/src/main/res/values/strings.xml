@@ -5,7 +5,18 @@
     <!--Main Screen Layout-->
 
     <string name="welcome">Welcome back %1$s !</string>
-    <string name="legend">You did well today !</string>
+    <string name="legend_empty"></string>
+    <string name="legend01">Legend 1 !</string>
+    <string name="legend02">Legend 2 !</string>
+    <string name="legend03">Legend 3 !</string>
+    <string name="legend04">Legend 4 !</string>
+    <string name="legend05">Legend 5 !</string>
+    <string name="legend06">Legend 6 !</string>
+    <string name="legend07">Legend 7 !</string>
+    <string name="legend08">Legend 8 !</string>
+    <string name="legend09">Legend 9 !</string>
+    <string name="legend10">Legend 10 !</string>
+
 
     <!--Drawer Menu Layout-->
 
@@ -81,55 +92,6 @@
         <item>Phone</item>
         <item>Camera</item>
     </string-array>
-
-    <!--Image Processing-->
-
-    <string-array name="anger_pictures">
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/anger/anger_01.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/anger/anger_02.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/anger/anger_03.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/anger/anger_04.jpg</item>
-    </string-array>
-
-    <string-array name="disgust_pictures">
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/disgust/disgust_01.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/disgust/disgust_02.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/disgust/disgust_03.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/disgust/disgust_04.jpg</item>
-    </string-array>
-
-    <string-array name="happiness_pictures">
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/happiness/happiness_01.jpg</item>
-        <!--<item>/storage/emulated/0/Moodlink/Pictures/Training/happiness/happiness_02.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/happiness/happiness_03.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/happiness/happiness_04.jpg</item>-->
-
-    </string-array>
-
-    <string-array name="neutrality_pictures">
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/neutrality/neutrality_01.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/neutrality/neutrality_02.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/neutrality/neutrality_03.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/neutrality/neutrality_04.jpg</item>
-
-    </string-array>
-
-    <string-array name="sadness_pictures">
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/sadness/sadness_01.jpg</item>
-        <!--<item>/storage/emulated/0/Moodlink/Pictures/Training/sadness/sadness_02.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/sadness/sadness_03.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/sadness/sadness_04.jpg</item>-->
-
-    </string-array>
-
-    <string-array name="surprise_pictures">
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/surprise/surprise_01.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/surprise/surprise_02.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/surprise/surprise_03.jpg</item>
-        <item>/storage/emulated/0/Moodlink/Pictures/Training/surprise/surprise_04.jpg</item>
-
-    </string-array>
-
 </resources>
 
 

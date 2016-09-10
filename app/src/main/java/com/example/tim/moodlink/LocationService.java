@@ -1,11 +1,9 @@
 package com.example.tim.moodlink;
 
-import android.*;
 import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -18,16 +16,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStates;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.util.Calendar;
 
@@ -52,9 +43,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 
         db = new SQLLiteDBHelper(getApplicationContext());
 
-
         locRequest = createLocationRequest();
-
 
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -88,7 +77,6 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         if (ActivityCompat.checkSelfPermission(LocationService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "onConnected: Permission granted");
 
-            Intent intent = new Intent(this, LocationService.class);
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
                     locRequest, LocationService.this);
 

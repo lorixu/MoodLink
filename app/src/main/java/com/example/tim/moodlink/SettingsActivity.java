@@ -2,11 +2,14 @@ package com.example.tim.moodlink;
 
 import android.annotation.TargetApi;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,6 +31,60 @@ import java.util.ArrayList;
 public class SettingsActivity extends AppCompatActivity {
 
     public static String TAG = "SETTING ACTIVITY";
+
+    LightProcessingService lightProcess;
+    boolean lightBound = false;
+    int lightValue = 0;
+    private ServiceConnection lightConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            Log.d(TAG, "onServiceConnected: We've bound to LocalService, cast the IBinder and get LocalService instance");
+            LightProcessingService.LocalBinder binder = (LightProcessingService.LocalBinder) service;
+            lightProcess = binder.getService();
+            lightBound = true;
+
+            lightValue = lightProcess.getMoodValue();
+            lightProcess.stopSelf();
+
+            Toast.makeText(SettingsActivity.this, "Light Mood Value = " + lightValue, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(TAG, "onServiceDisconnected");
+            lightBound = false;
+        }
+    };
+
+    LocationProcessingService locationProcess;
+    boolean locationBound = false;
+    int locationValue = 0;
+    private ServiceConnection locationConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            Log.d(TAG, "onServiceConnected: We've bound to LocalService, cast the IBinder and get LocalService instance");
+            LocationProcessingService.LocalBinder binder = (LocationProcessingService.LocalBinder) service;
+            locationProcess = binder.getService();
+            locationBound = true;
+
+            locationValue = locationProcess.getMoodValue();
+            locationProcess.stopSelf();
+
+            Toast.makeText(SettingsActivity.this, "Light Mood Value = " + locationValue, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(TAG, "onServiceDisconnected");
+            locationBound = false;
+        }
+    };
 
     public SQLLiteDBHelper db;
 
@@ -233,23 +290,24 @@ public class SettingsActivity extends AppCompatActivity {
                 deleteButton.setOnClickListener(null);
 
                 TextView itemSelected = (TextView) view;
-                Log.d(TAG, "onItemSelected: " + itemSelected.getText().toString());
-                switch (itemSelected.getText().toString()) {
-                    case "Luminosity":
-                        setButtonOnLuminosity(dataButton, processButton, deleteButton);
-                        break;
-                    case "Accelerometer":
-                        setButtonOnAccelerometer(dataButton, processButton, deleteButton);
-                        break;
-                    case "Location":
-                        setButtonOnLocation(dataButton, processButton, deleteButton);
-                        break;
-                    case "Phone":
-                        setButtonOnPhone(dataButton, processButton, deleteButton);
-                        break;
-                    case "Camera":
-                        setButtonOnCamera(dataButton, processButton, deleteButton);
-                        break;
+                if (itemSelected != null) {
+                    switch (itemSelected.getText().toString()) {
+                        case "Luminosity":
+                            setButtonOnLuminosity(dataButton, processButton, deleteButton);
+                            break;
+                        case "Accelerometer":
+                            setButtonOnAccelerometer(dataButton, processButton, deleteButton);
+                            break;
+                        case "Location":
+                            setButtonOnLocation(dataButton, processButton, deleteButton);
+                            break;
+                        case "Phone":
+                            setButtonOnPhone(dataButton, processButton, deleteButton);
+                            break;
+                        case "Camera":
+                            setButtonOnCamera(dataButton, processButton, deleteButton);
+                            break;
+                    }
                 }
             }
 
@@ -263,6 +321,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         db.close();
     }
 
@@ -278,8 +337,14 @@ public class SettingsActivity extends AppCompatActivity {
         processButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent lightProcessingIntent = new Intent(SettingsActivity.this, LightProcessingService.class);
-                SettingsActivity.this.startService(lightProcessingIntent);
+
+                if (lightBound == false) {
+                    Intent intent = new Intent(SettingsActivity.this, LightProcessingService.class);
+                    bindService(intent, lightConnection, Context.BIND_AUTO_CREATE);
+                }else{
+                    lightValue = lightProcess.getMoodValue();
+                    Toast.makeText(SettingsActivity.this, "Light Mood Value = " + lightValue, Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -328,8 +393,14 @@ public class SettingsActivity extends AppCompatActivity {
         processButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Intent locationProcessingIntent = new Intent(SettingsActivity.this, LocationProcessingService.class);
-                //SettingsActivity.this.startService(locationProcessingIntent);
+
+                if (locationBound == false) {
+                    Intent intent = new Intent(SettingsActivity.this, LocationProcessingService.class);
+                    bindService(intent, locationConnection, Context.BIND_AUTO_CREATE);
+                }else{
+                    locationValue = locationProcess.getMoodValue();
+                    Toast.makeText(SettingsActivity.this, "Location Mood Value = " + locationValue, Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

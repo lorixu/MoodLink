@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
-import android.os.Bundle;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -36,7 +35,7 @@ public class PhoneReceiver extends BroadcastReceiver {
             try {
                 recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                 recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
 
                 Log.d(TAG, "onReceive: Recording");
                 File file = new File(context.getString(R.string.phone_recorder_storage));
@@ -54,7 +53,7 @@ public class PhoneReceiver extends BroadcastReceiver {
                 String minute = Integer.toString(c.get(Calendar.MINUTE));
                 if (minute.length() == 1) minute = "0" + minute;
 
-                String fileName = month + day + year + "_" + hour + minute + ".mp3";
+                String fileName = month + day + year + "_" + hour + minute + ".wav";
 
                 file = new File(context.getString(R.string.phone_recorder_storage), fileName);
 

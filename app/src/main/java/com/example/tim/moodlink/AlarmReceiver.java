@@ -15,6 +15,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     public static final int CAMERA_SERVICE = 2;
     public static final int LOCATION_SERVICE = 3;
     public static final int ACCELEROMETER_SERVICE = 4;
+    public static final int MOOD_PROCESSING_INTENT = 5;
 
     @Override
     public void onReceive(Context contextReceived, Intent intent) {
@@ -38,6 +39,10 @@ public class AlarmReceiver extends BroadcastReceiver {
             case ACCELEROMETER_SERVICE :
                 Log.d(TAG, "onReceive: Accelerometer Alarm Received!");
                 AccelerometerService.launchAccelerometerService(contextReceived);
+                break;
+            case MOOD_PROCESSING_INTENT :
+                Log.d(TAG, "onReceive: Mood Processing Alarm Received!");
+                MoodValueProcessing.launchMoodValueProcessingService(contextReceived);
                 break;
         }
 
